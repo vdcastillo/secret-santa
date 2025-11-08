@@ -80,6 +80,34 @@ if (isset($_POST['delete_group'])) {
     }
 }
 
+// Teilnehmer E-Mail aktualisieren
+if (isset($_POST['update_participant_email'])) {
+    $participant_id = intval($_POST['participant_id']);
+    $new_email = trim($_POST['participant_email']);
+    
+    // Validierung
+    if (!empty($new_email) && !filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
+        $participant_error = "Ungültige E-Mail-Adresse.";
+    } else {
+        // Prüfe ob Teilnehmer zur Gruppe gehört
+        $stmt = $pdo->prepare("SELECT id FROM `participants` WHERE `id` = ? AND `group_id` = ?");
+        $stmt->execute([$participant_id, $group['id']]);
+        
+        if ($stmt->fetch()) {
+            $stmt = $pdo->prepare("UPDATE `participants` SET `email` = ? WHERE `id` = ?");
+            $stmt->execute([$new_email ?: null, $participant_id]);
+            $participant_success = "E-Mail-Adresse erfolgreich aktualisiert.";
+            
+            // Teilnehmer neu laden
+            $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `group_id` = ?");
+            $stmt->execute([$group['id']]);
+            $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $participant_error = "Teilnehmer nicht gefunden.";
+        }
+    }
+}
+
 // Teilnehmer löschen
 if (isset($_GET['delete'])) {
     $participant_id = intval($_GET['delete']);
@@ -287,20 +315,102 @@ if (isset($_POST['draw'])) {
     <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Zusätzliche Styles spezifisch für admin.php (falls nötig) */
+        /* Zusätzliche Styles spezifisch für admin.php */
+        
+        /* Teilnehmer Tabelle - Verbesserte Spaltenbreiten */
+        table.participants-table th:nth-child(1) { width: 20%; } /* Name */
+        table.participants-table th:nth-child(2) { width: 35%; } /* E-Mail */
+        table.participants-table th:nth-child(3) { width: 30%; } /* Link */
+        table.participants-table th:nth-child(4) { width: 15%; text-align: center; } /* Aktionen */
+        
+        /* Verhindere dass die Tabelle zu breit wird */
+        table.participants-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        
+        /* Überschreibe das globale td:last-child flexbox */
+        table.participants-table td {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        
+        table.participants-table td:nth-child(4) {
+            text-align: center;
+        }
+        
+        /* E-Mail Input Styling */
+        table.participants-table td form input[type="email"] {
+            font-size: 0.9rem;
+        }
+        
+        /* Button Styling in Tabelle */
+        table.participants-table .button.small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            min-width: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Link Container */
+        table.participants-table .link-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Responsive Anpassungen */
+        @media (max-width: 768px) {
+            table.participants-table th:nth-child(3) { 
+                width: 25%; 
+            }
+            table.participants-table td form {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            table.participants-table td form input[type="email"] {
+                min-width: 100%;
+            }
+        }
     </style>
     <!-- JavaScript für Kopieren-Button -->
     <script>
         function copyToClipboard(elementId) {
-            var copyText = document.getElementById(elementId).innerText;
+            var element = document.getElementById(elementId);
+            var copyText = element.getAttribute('data-url') || element.innerText || element.textContent;
+            
+            // Moderne Clipboard API (bevorzugt)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText).then(function() {
+                    alert("Link kopiert: " + copyText);
+                }).catch(function(err) {
+                    // Fallback bei Fehler
+                    fallbackCopy(copyText);
+                });
+            } else {
+                // Fallback für ältere Browser
+                fallbackCopy(copyText);
+            }
+        }
+        
+        function fallbackCopy(text) {
             var tempInput = document.createElement("textarea");
-            tempInput.value = copyText;
+            tempInput.value = text;
+            tempInput.style.position = "fixed";
+            tempInput.style.opacity = "0";
             document.body.appendChild(tempInput);
             tempInput.select();
             tempInput.setSelectionRange(0, 99999); // Für mobile Geräte
-            document.execCommand("copy");
+            try {
+                document.execCommand("copy");
+                alert("Link kopiert: " + text);
+            } catch (err) {
+                alert("Fehler beim Kopieren. Bitte manuell kopieren.");
+            }
             document.body.removeChild(tempInput);
-            alert("Link kopiert: " + copyText);
         }
     </script>
 </head>
@@ -358,6 +468,18 @@ if (isset($_POST['draw'])) {
                 <?php echo htmlspecialchars($delete_error); ?>
             </div>
         <?php endif; ?>
+        
+        <?php if (isset($participant_success)): ?>
+            <div class="notification success">
+                <?php echo htmlspecialchars($participant_success); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($participant_error)): ?>
+            <div class="notification error">
+                <?php echo htmlspecialchars($participant_error); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Gruppendetails bearbeiten -->
         <h2>Gruppendetails</h2>
@@ -405,13 +527,14 @@ if (isset($_POST['draw'])) {
         <!-- Teilnehmerliste anzeigen -->
         <h2>Teilnehmer</h2>
         <?php if ($participants): ?>
-            <table>
+            <table class="participants-table">
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>E-Mail</th>
+                        <th>Teilnehmer-Link</th>
                         <?php if (!$group['is_drawn']): ?>
-                            <th>Aktion</th>
+                            <th>Aktionen</th>
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -419,9 +542,50 @@ if (isset($_POST['draw'])) {
                     <?php foreach ($participants as $p): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($p['name'] ?? ''); ?></td>
-                            <td><?php echo htmlspecialchars($p['email'] ?? ''); ?></td>
+                            <td>
+                                <form method="POST" style="display: flex; gap: 0.5rem; align-items: center; margin: 0;">
+                                    <input type="hidden" name="participant_id" value="<?php echo $p['id']; ?>">
+                                    <input type="email" 
+                                           name="participant_email" 
+                                           value="<?php echo htmlspecialchars($p['email'] ?? ''); ?>" 
+                                           placeholder="email@example.com"
+                                           style="flex: 1; min-width: 180px; padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px;">
+                                    <button type="submit" 
+                                            name="update_participant_email" 
+                                            class="button secondary small"
+                                            style="white-space: nowrap;">
+                                        💾
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <?php if (!empty($p['participant_token'])): ?>
+                                <div class="link-container">
+                                    <span id="participant-link-<?php echo $p['id']; ?>" 
+                                          data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($p['participant_token']))); ?>"
+                                          style="font-size: 0.8rem; color: #666; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"
+                                          title="Klicke auf 📋 um den vollständigen Link zu kopieren">
+                                    </span>
+                                    <button type="button"
+                                            class="button secondary small" 
+                                            onclick="copyToClipboard('participant-link-<?php echo $p['id']; ?>')"
+                                            title="Link kopieren"
+                                            style="white-space: nowrap; padding: 0.5rem 0.75rem;">
+                                        📋
+                                    </button>
+                                </div>
+                                <?php else: ?>
+                                <span style="color: #999; font-style: italic; font-size: 0.85rem;">Kein Token</span>
+                                <?php endif; ?>
+                            </td>
                             <?php if (!$group['is_drawn']): ?>
-                                <td><a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete=<?php echo urlencode($p['id']); ?>" class="button secondary small">Löschen</a></td>
+                                <td style="text-align: center;">
+                                    <a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete=<?php echo urlencode($p['id']); ?>" 
+                                       class="button error small"
+                                       onclick="return confirm('Möchtest du <?php echo htmlspecialchars($p['name']); ?> wirklich löschen?');">
+                                        🗑️
+                                    </a>
+                                </td>
                             <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
