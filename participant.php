@@ -1,46 +1,360 @@
 <?php
-// participant.php
+/**
+ * participant.php
+ * 
+ * Teilnehmerbereich für Wichtel-Gruppen
+ * 
+ * Features:
+ * - Cookie-basiertes Token-Management für automatisches Login
+ * - Unterstützung für mehrere Gruppen pro Benutzer
+ * - Gruppenauswahl-Interface wenn mehrere Gruppen vorhanden
+ * - Token in URL hat Vorrang vor Cookie-Daten
+ * - Sichere Cookie-Verwaltung (httpOnly, SameSite, begrenzte Speicherung)
+ * 
+ * Konfiguration:
+ * - COOKIE_NAME: Name des Cookies (config.php)
+ * - COOKIE_LIFETIME: Lebensdauer des Cookies in Sekunden (config.php)
+ * - COOKIE_MAX_TOKENS: Max. Anzahl gespeicherter Tokens (config.php)
+ * 
+ * Sicherheit:
+ * - Token-Validierung (nur alphanumerische Zeichen)
+ * - Maximale Anzahl gespeicherter Tokens (konfigurierbar)
+ * - Secure-Flag bei HTTPS
+ * - SameSite=Lax zur CSRF-Prävention
+ * - HttpOnly-Flag gegen XSS-Angriffe
+ */
 
 require_once 'functions.php';
 
-$participant_token = $_GET['token'] ?? '';
+session_start();
+
 $pdo = db_connect();
 
-// Teilnehmer abrufen
-$stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `participant_token` = ?");
-$stmt->execute([$participant_token]);
-$participant = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$participant) {
-    die('Ungültiger Token.');
+/**
+ * Speichert einen Token im Cookie (fügt ihn zur Liste hinzu, falls noch nicht vorhanden)
+ */
+function save_token_to_cookie($token) {
+    $tokens = get_tokens_from_cookie();
+    
+    // Token validieren (nur alphanumerische Zeichen)
+    if (!preg_match('/^[a-zA-Z0-9]+$/', $token)) {
+        return false;
+    }
+    
+    // Token zur Liste hinzufügen, wenn noch nicht vorhanden
+    if (!in_array($token, $tokens)) {
+        $tokens[] = $token;
+    }
+    
+    // Nur die letzten X Tokens behalten (konfigurierbar in config.php)
+    $tokens = array_slice($tokens, -COOKIE_MAX_TOKENS);
+    
+    // Cookie mit Sicherheitseinstellungen setzen
+    $cookie_options = [
+        'expires' => time() + COOKIE_LIFETIME,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ];
+    
+    return setcookie(COOKIE_NAME, json_encode($tokens), $cookie_options);
 }
 
-// Gruppe abrufen
-$stmt = $pdo->prepare("SELECT * FROM `groups` WHERE `id` = ?");
-$stmt->execute([$participant['group_id']]);
-$group = $stmt->fetch(PDO::FETCH_ASSOC);
+/**
+ * Liest alle gespeicherten Tokens aus dem Cookie
+ */
+function get_tokens_from_cookie() {
+    if (!isset($_COOKIE[COOKIE_NAME])) {
+        return [];
+    }
+    
+    $tokens = json_decode($_COOKIE[COOKIE_NAME], true);
+    
+    if (!is_array($tokens)) {
+        return [];
+    }
+    
+    // Nur gültige Tokens zurückgeben
+    return array_filter($tokens, function($token) {
+        return preg_match('/^[a-zA-Z0-9]+$/', $token);
+    });
+}
 
-// Zugewiesenen Teilnehmer abrufen, falls ausgelost
+/**
+ * Lädt alle Teilnehmerdaten für die gespeicherten Tokens
+ */
+function load_participants_from_tokens($pdo, $tokens) {
+    if (empty($tokens)) {
+        return [];
+    }
+    
+    $placeholders = str_repeat('?,', count($tokens) - 1) . '?';
+    $stmt = $pdo->prepare("SELECT p.*, g.name as group_name, g.is_drawn 
+                           FROM `participants` p 
+                           JOIN `groups` g ON p.group_id = g.id 
+                           WHERE p.participant_token IN ($placeholders)
+                           ORDER BY g.name, p.name");
+    $stmt->execute($tokens);
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Token aus URL hat Vorrang
+$participant_token = $_GET['token'] ?? '';
+$show_group_selector = false;
+$participant = null;
+$group = null;
 $assigned = null;
-if ($group['is_drawn'] && !empty($participant['assigned_to'])) {
-    $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `id` = ?");
-    $stmt->execute([$participant['assigned_to']]);
-    $assigned = $stmt->fetch(PDO::FETCH_ASSOC);
-}
 
-// Wunschliste aktualisieren (nur wenn noch nicht ausgelost)
-if (isset($_POST['update_wishlist']) && !$group['is_drawn']) {
-    $wishlist = trim($_POST['wishlist']);
+// Wenn Token in URL vorhanden ist
+if (!empty($participant_token)) {
+    // Token validieren
+    if (!preg_match('/^[a-zA-Z0-9]+$/', $participant_token)) {
+        die('Ungültiger Token.');
+    }
     
-    $stmt = $pdo->prepare("UPDATE `participants` SET `wishlist` = ? WHERE `id` = ?");
-    $stmt->execute([$wishlist, $participant['id']]);
-    
-    // Teilnehmer neu abrufen
+    // Teilnehmer abrufen
     $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `participant_token` = ?");
     $stmt->execute([$participant_token]);
     $participant = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    $wishlist_success = "Deine Wunschliste wurde erfolgreich gespeichert.";
+    if (!$participant) {
+        die('Ungültiger Token.');
+    }
+    
+    // Token im Cookie speichern
+    save_token_to_cookie($participant_token);
+    
+} else {
+    // Kein Token in URL - versuche aus Cookie zu laden
+    $saved_tokens = get_tokens_from_cookie();
+    
+    if (empty($saved_tokens)) {
+        // Keine gespeicherten Tokens
+        die('Kein gültiger Token gefunden. Bitte verwende deinen Teilnehmer-Link.');
+    }
+    
+    // Teilnehmer für alle gespeicherten Tokens laden
+    $participants = load_participants_from_tokens($pdo, $saved_tokens);
+    
+    if (empty($participants)) {
+        die('Keine gültigen Teilnahmen gefunden.');
+    }
+    
+    // Wenn Gruppenauswahl per POST gesendet wurde
+    if (isset($_POST['select_group']) && isset($_POST['selected_token'])) {
+        $selected_token = $_POST['selected_token'];
+        
+        // Token validieren
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $selected_token) || !in_array($selected_token, $saved_tokens)) {
+            die('Ungültiger Token.');
+        }
+        
+        $participant_token = $selected_token;
+        
+        // Teilnehmer laden
+        $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `participant_token` = ?");
+        $stmt->execute([$participant_token]);
+        $participant = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$participant) {
+            die('Ungültiger Token.');
+        }
+    } elseif (count($participants) > 1) {
+        // Mehrere Gruppen - zeige Auswahlseite
+        $show_group_selector = true;
+    } else {
+        // Nur eine Gruppe - direkt laden
+        $participant = $participants[0];
+        $participant_token = $participant['participant_token'];
+    }
+}
+
+// Wenn Teilnehmer geladen wurde, lade Gruppendaten
+if ($participant) {
+    // Gruppe abrufen
+    $stmt = $pdo->prepare("SELECT * FROM `groups` WHERE `id` = ?");
+    $stmt->execute([$participant['group_id']]);
+    $group = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // Zugewiesenen Teilnehmer abrufen, falls ausgelost
+    if ($group['is_drawn'] && !empty($participant['assigned_to'])) {
+        $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `id` = ?");
+        $stmt->execute([$participant['assigned_to']]);
+        $assigned = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Wunschliste aktualisieren (nur wenn noch nicht ausgelost)
+    if (isset($_POST['update_wishlist']) && !$group['is_drawn']) {
+        $wishlist = trim($_POST['wishlist']);
+        
+        $stmt = $pdo->prepare("UPDATE `participants` SET `wishlist` = ? WHERE `id` = ?");
+        $stmt->execute([$wishlist, $participant['id']]);
+        
+        // Teilnehmer neu abrufen
+        $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `participant_token` = ?");
+        $stmt->execute([$participant_token]);
+        $participant = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $wishlist_success = "Deine Wunschliste wurde erfolgreich gespeichert.";
+    }
+}
+
+// Wenn Gruppenauswahl angezeigt werden soll
+if ($show_group_selector) {
+    ?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Gruppe auswählen - Wichteln</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .group-selector {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .group-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .group-card:hover {
+            border-color: var(--secondary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .group-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .group-card input[type="radio"]:checked + .group-card-content {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1.5rem;
+        }
+        
+        .group-card-content {
+            padding-left: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .group-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        
+        .group-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .group-participant {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .group-status {
+            display: inline-block;
+            padding: 0.4rem 0.875rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        
+        .status-drawn {
+            background: linear-gradient(135deg, var(--success), #05b186);
+            color: white;
+        }
+        
+        .status-pending {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            color: white;
+        }
+        
+        .submit-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/logo.png" alt="Wichtel Logo">
+    </header>
+    <div class="container">
+        <div class="group-selector">
+            <h1>Willkommen zurück! 🎄</h1>
+            <p>Du nimmst an mehreren Wichtel-Gruppen teil. Bitte wähle die Gruppe aus, die du ansehen möchtest:</p>
+            
+            <form method="POST" id="group-selector-form">
+                <?php foreach ($participants as $p): ?>
+                <label class="group-card">
+                    <input type="radio" name="selected_token" value="<?php echo htmlspecialchars($p['participant_token']); ?>" required>
+                    <div class="group-card-content">
+                        <div class="group-card-header">
+                            <div>
+                                <h2 class="group-name"><?php echo htmlspecialchars($p['group_name']); ?></h2>
+                                <p class="group-participant">Als: <strong><?php echo htmlspecialchars($p['name']); ?></strong></p>
+                            </div>
+                            <span class="group-status <?php echo $p['is_drawn'] ? 'status-drawn' : 'status-pending'; ?>">
+                                <?php echo $p['is_drawn'] ? '✓ Ausgelost' : 'Ausstehend'; ?>
+                            </span>
+                        </div>
+                    </div>
+                </label>
+                <?php endforeach; ?>
+                
+                <div class="submit-container">
+                    <button type="submit" name="select_group" class="button primary">Gruppe öffnen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Bei Klick auf die Card auch das Radio-Button aktivieren
+        document.querySelectorAll('.group-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            });
+        });
+        
+        // Auto-submit bei Auswahl (optional)
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Kurze Verzögerung für visuelle Rückmeldung
+                setTimeout(() => {
+                    document.getElementById('group-selector-form').submit();
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
+    <?php
+    exit;
 }
 ?>
 
@@ -146,6 +460,20 @@ if (isset($_POST['update_wishlist']) && !$group['is_drawn']) {
         <p>Du kannst diesen Link verwenden, um deine Teilnahme zu teilen oder für zukünftige Referenz zu speichern:</p>
         <pre id="participant-link"><?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?></pre>
         <button class="button secondary small copy-button" onclick="copyToClipboard('participant-link')">Link kopieren</button>
+
+        <?php
+        // Prüfen ob mehrere Gruppen im Cookie gespeichert sind
+        $saved_tokens = get_tokens_from_cookie();
+        if (count($saved_tokens) > 1):
+        ?>
+        <hr>
+        
+        <!-- Navigation für mehrere Gruppen -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <p class="text-muted">Du nimmst an mehreren Wichtel-Gruppen teil.</p>
+            <a href="participant.php" class="button secondary small">🔄 Gruppe wechseln</a>
+        </div>
+        <?php endif; ?>
 
     </div>
 </body>

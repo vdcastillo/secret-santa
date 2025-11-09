@@ -168,10 +168,20 @@ define('DB_PASS', 'IhrSicheresPasswort123!');  // Dein DB-Passwort
 define('SMTP_FROM_EMAIL', 'noreply@wichtlä.ch');  // Deine Absender-E-Mail
 define('SMTP_FROM_NAME', 'Wichtel Webseite');
 
+// Cookie-Einstellungen für automatisches Login (optional anpassen)
+define('COOKIE_NAME', 'wichteln_tokens'); // Name des Cookies
+define('COOKIE_LIFETIME', 60 * 60 * 24 * 90); // 90 Tage
+define('COOKIE_MAX_TOKENS', 10); // Max. 10 Gruppen pro Benutzer
+
 // Master Admin Token generieren
 define('MASTER_ADMIN_TOKEN', 'GENERIERTES_TOKEN_HIER');
 ?>
 ```
+
+**Cookie-Einstellungen (optional):**
+- `COOKIE_LIFETIME`: Wie lange Benutzer eingeloggt bleiben (Standard: 90 Tage)
+- `COOKIE_MAX_TOKENS`: Maximale Anzahl Gruppen pro Benutzer (Standard: 10)
+- Siehe [COOKIE_FEATURE.md](COOKIE_FEATURE.md) für mehr Details
 
 #### 3.3 Sicheres Admin-Token generieren
 

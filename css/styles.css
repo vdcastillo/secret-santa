@@ -1422,3 +1422,134 @@ a.button:disabled {
     font-weight: 600;
 }
 
+/* Group Selector Styles */
+.group-selector {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.group-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.group-card:hover {
+    border-color: var(--secondary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.group-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.group-card input[type="radio"]:checked + .group-card-content {
+    border-left: 4px solid var(--secondary-color);
+    padding-left: 1.5rem;
+}
+
+.group-card input[type="radio"]:checked + .group-card-content::before {
+    content: '✓';
+    position: absolute;
+    left: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.group-card-content {
+    padding-left: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.group-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.group-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+}
+
+.group-participant {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.group-status {
+    display: inline-block;
+    padding: 0.4rem 0.875rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.status-drawn {
+    background: linear-gradient(135deg, var(--success), #05b186);
+    color: white;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+    color: white;
+}
+
+.submit-container {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Group Selector Responsive */
+@media (max-width: 600px) {
+    .group-card {
+        padding: 1rem;
+    }
+    
+    .group-card-header {
+        flex-direction: column;
+    }
+    
+    .group-name {
+        font-size: 1.2rem;
+    }
+    
+    .group-participant {
+        font-size: 1rem;
+    }
+    
+    .group-status {
+        margin-top: 0.5rem;
+    }
+}
+
