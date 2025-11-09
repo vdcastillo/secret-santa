@@ -231,7 +231,11 @@
 
     <!-- Simple Footer -->
     <footer style="background: var(--secondary-dark); color: white; text-align: center; padding: 2rem;">
-        <p style="margin: 0; color: white; opacity: 1;">© <?php echo date('Y'); ?> wichtlä.ch - Online Wichteln leicht gemacht</p>
+        <p style="margin: 0; color: white; opacity: 1;">
+            © <?php echo date('Y'); ?> wichtlä.ch • 
+            <a href="impressum.php" style="color: white; text-decoration: underline;">Impressum</a> • 
+            <a href="datenschutz.php" style="color: white; text-decoration: underline;">Datenschutz</a>
+        </p>
     </footer>
 
     <script>

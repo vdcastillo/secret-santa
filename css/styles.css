@@ -1678,5 +1678,28 @@ a.button:disabled {
     margin: 0;
 }
 
+/* Privacy Highlight Box */
+.privacy-highlight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.1), rgba(42, 157, 143, 0.1));
+    border: 2px solid var(--success);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.privacy-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.privacy-highlight p {
+    margin: 0;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
 /* ...existing code... */
 
