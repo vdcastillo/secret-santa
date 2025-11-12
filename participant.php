@@ -423,6 +423,65 @@ if ($show_group_selector) {
     <link rel="stylesheet" href="css/styles.css">
     <style>
         /* Zusätzliche Styles spezifisch für participant.php (falls nötig) */
+        .ad-container {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        .ad-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+        /* Test Ad Placeholder */
+        .ad-test-placeholder {
+            background: #e3f2fd;
+            border: 3px dashed #2196F3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1976D2;
+            font-size: 1rem;
+            font-family: monospace;
+            font-weight: bold;
+            padding: 2rem;
+            min-height: 250px;
+            text-align: center;
+        }
+        .ad-test-placeholder.sidebar-size {
+            min-height: 600px;
+        }
+        /* Sidebar Ad Container (nur Desktop) */
+        .ad-sidebar {
+            display: none;
+        }
+        @media (min-width: 1200px) {
+            .content-with-sidebar {
+                display: flex;
+                gap: 2rem;
+                align-items: flex-start;
+            }
+            .main-content {
+                flex: 1;
+                min-width: 0;
+            }
+            .ad-sidebar {
+                display: block;
+                width: 300px;
+                position: sticky;
+                top: 2rem;
+                flex-shrink: 0;
+            }
+            .ad-sidebar .ad-container {
+                margin: 0;
+                min-height: 600px;
+            }
+        }
     </style>
     <!-- JavaScript für Kopieren-Button -->
     <script>
@@ -463,6 +522,17 @@ if ($show_group_selector) {
         </a>
     </header>
     <div class="container">
+        <?php 
+        // Sidebar Ad (Option 3) - wird nur auf Desktop angezeigt
+        $show_sidebar = defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
+                       defined('GOOGLE_ADS_SHOW_OPTION3') && GOOGLE_ADS_SHOW_OPTION3;
+        
+        if ($show_sidebar): 
+        ?>
+        <div class="content-with-sidebar">
+            <div class="main-content">
+        <?php endif; ?>
+        
         <h1>Willkommen, <?php echo htmlspecialchars($participant['name']); ?>!</h1>
         <p>Gruppe: <?php echo htmlspecialchars($group['name']); ?></p>
         
@@ -492,6 +562,38 @@ if ($show_group_selector) {
             <?php endif; ?>
         <?php else: ?>
             <p>Die Auslosung wurde noch nicht durchgeführt. Bitte schaue später wieder vorbei.</p>
+        <?php endif; ?>
+        
+        <?php 
+        // Google Ad Position 1: Nach Wichtelpartner-Bereich (empfohlen)
+        if (defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
+            defined('GOOGLE_ADS_SHOW_OPTION1') && GOOGLE_ADS_SHOW_OPTION1): 
+            
+            $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
+        ?>
+        <div class="ad-container">
+            <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 1)' : 'Anzeige'; ?></div>
+            <?php if ($is_testing): ?>
+                <div class="ad-test-placeholder">
+                    📊 Google Ad Placeholder<br>
+                    Position 1: Nach Wichtelpartner<br>
+                    Responsive Display Ad
+                </div>
+            <?php else: ?>
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                     crossorigin="anonymous"></script>
+                <!-- Participant Area Ad - Position 1 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                     data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION1); ?>"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            <?php endif; ?>
+        </div>
         <?php endif; ?>
         
         <hr>
@@ -545,6 +647,72 @@ if ($show_group_selector) {
             <p class="text-muted">Du nimmst an mehreren Wichtel-Gruppen teil.</p>
             <a href="participant.php" class="button secondary small">🔄 Gruppe wechseln</a>
         </div>
+        <?php endif; ?>
+
+        <?php 
+        // Google Ad Position 2: Am Ende der Seite (vor Footer)
+        if (defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
+            defined('GOOGLE_ADS_SHOW_OPTION2') && GOOGLE_ADS_SHOW_OPTION2): 
+            
+            $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
+        ?>
+        <hr>
+        <div class="ad-container">
+            <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 2)' : 'Anzeige'; ?></div>
+            <?php if ($is_testing): ?>
+                <div class="ad-test-placeholder">
+                    📊 Google Ad Placeholder<br>
+                    Position 2: Am Ende der Seite<br>
+                    Responsive Display Ad
+                </div>
+            <?php else: ?>
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                     crossorigin="anonymous"></script>
+                <!-- Participant Area Ad - Position 2 -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                     data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION2); ?>"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($show_sidebar): ?>
+            </div><!-- .main-content -->
+            
+            <!-- Sidebar Ad (Option 3) - nur Desktop -->
+            <aside class="ad-sidebar">
+                <div class="ad-container">
+                    <div class="ad-label"><?php echo (defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING) ? 'Test-Anzeige (Position 3)' : 'Anzeige'; ?></div>
+                    <?php if (defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING): ?>
+                        <div class="ad-test-placeholder sidebar-size">
+                            📊 Google Ad Placeholder<br>
+                            Position 3: Sidebar (Desktop only)<br>
+                            300x600 Skyscraper<br>
+                            Sticky Position
+                        </div>
+                    <?php else: ?>
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                             crossorigin="anonymous"></script>
+                        <!-- Participant Area Ad - Sidebar -->
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                             data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION3); ?>"
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    <?php endif; ?>
+                </div>
+            </aside>
+        </div><!-- .content-with-sidebar -->
         <?php endif; ?>
 
     </div>

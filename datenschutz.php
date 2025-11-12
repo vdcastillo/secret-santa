@@ -175,10 +175,21 @@
             
             <h2>6. Datenweitergabe</h2>
             
+            <h3>Grundsatz: Keine Weitergabe</h3>
             <div class="privacy-highlight">
                 <span class="privacy-icon">🔒</span>
-                <p><strong>Keine Weitergabe an Dritte:</strong> Wir geben Ihre Daten grundsätzlich nicht an Dritte weiter. Die einzige Ausnahme ist der Versand von E-Mails über unseren E-Mail-Provider.</p>
+                <p><strong>Ihre Wichtel-Daten bleiben privat:</strong> Wir geben Ihre Wichtel-Gruppendaten (Namen, E-Mail-Adressen, Wunschlisten) grundsätzlich nicht an Dritte weiter. Die einzige Ausnahme ist der Versand von E-Mails über unseren E-Mail-Provider.</p>
             </div>
+            
+            <h3>Ausnahme: Werbe-Partner</h3>
+            <p>
+                Für die Finanzierung unseres kostenlosen Dienstes nutzen wir Google AdSense zur Anzeige von Werbung. Dabei werden technische Daten (IP-Adresse, Browser-Informationen, Seitenaufrufe) an Google übermittelt. Diese Daten sind <strong>nicht mit Ihren Wichtel-Gruppendaten verknüpft</strong>.
+            </p>
+            <ul>
+                <li><strong>Google AdSense:</strong> Siehe Abschnitt „Werbung und Analyse-Tools" für Details</li>
+                <li><strong>Zweck:</strong> Anzeige personalisierter Werbung</li>
+                <li><strong>Kontrollmöglichkeit:</strong> Sie können personalisierte Werbung in den Google-Einstellungen deaktivieren</li>
+            </ul>
             
             <h3>Innerhalb der Wichtel-Gruppe</h3>
             <p> 
@@ -232,9 +243,77 @@
                 <li><strong>Zugriffskontrolle:</strong> Nur autorisierte Personen können auf Gruppendaten zugreifen</li>
             </ul>
             
-            <h2>10. Analyse-Tools und Tracking</h2>
+            <h2>10. Werbung und Analyse-Tools</h2>
             
-            <h3>Matomo</h3>
+            <h3>Google AdSense</h3>
+            <p>
+                Diese Website verwendet Google AdSense, einen Dienst zur Einbindung von Werbeanzeigen der Google Ireland Limited („Google"), Gordon House, Barrow Street, Dublin 4, Irland.
+            </p>
+            
+            <h4>Zweck und Umfang</h4>
+            <p>
+                Google AdSense verwendet Cookies und ähnliche Technologien, um Ihnen relevante Werbung anzuzeigen und die Effektivität von Werbekampagnen zu messen. Die Anzeigen basieren auf Ihren vorherigen Besuchen auf dieser und anderen Websites.
+            </p>
+            
+            <h4>Erhobene Daten</h4>
+            <p>
+                Google AdSense erfasst folgende Informationen:
+            </p>
+            <ul>
+                <li>Ihre IP-Adresse (anonymisiert)</li>
+                <li>Informationen über den Browser und das Betriebssystem</li>
+                <li>Besuchte Seiten und angezeigte Anzeigen</li>
+                <li>Klicks auf Anzeigen</li>
+                <li>Datum und Uhrzeit des Zugriffs</li>
+            </ul>
+            
+            <h4>Cookies von Google AdSense</h4>
+            <p>
+                Google verwendet verschiedene Cookies, um personalisierte Werbung anzuzeigen. Dazu gehören unter anderem:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cookie-Name</th>
+                        <th>Zweck</th>
+                        <th>Lebensdauer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>__gads</code></td>
+                        <td>Registrierung und Berichterstattung von Nutzeraktionen</td>
+                        <td>13 Monate</td>
+                    </tr>
+                    <tr>
+                        <td><code>__gac</code></td>
+                        <td>Kampagnen-bezogene Informationen</td>
+                        <td>90 Tage</td>
+                    </tr>
+                    <tr>
+                        <td><code>IDE</code></td>
+                        <td>Anzeigenpersonalisierung (DoubleClick)</td>
+                        <td>13 Monate</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Rechtsgrundlage und Widerspruchsrecht</h4>
+            <p>
+                Die Datenverarbeitung erfolgt auf Grundlage Ihrer Einwilligung. Sie haben jederzeit das Recht, personalisierte Werbung zu deaktivieren:
+            </p>
+            <ul>
+                <li><strong>Google Anzeigeneinstellungen:</strong> <a href="https://adssettings.google.com/" target="_blank" rel="noopener">https://adssettings.google.com/</a></li>
+                <li><strong>Digitale Werbeallianz:</strong> <a href="https://www.youronlinechoices.com/ch-de/" target="_blank" rel="noopener">www.youronlinechoices.com</a></li>
+            </ul>
+            
+            <h4>Datenweitergabe an Google</h4>
+            <div class="privacy-highlight">
+                <span class="privacy-icon">⚠️</span>
+                <p><strong>Hinweis:</strong> Bei der Nutzung von Google AdSense werden Daten an Google übermittelt. Google kann diese Daten mit anderen Google-Diensten verknüpfen. Weitere Informationen finden Sie in der <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzerklärung von Google</a>.</p>
+            </div>
+            
+            <h3>Matomo (Website-Analyse)</h3>
             <p>
                 Diese Website verwendet Matomo, eine Open-Source-Software zur statistischen Auswertung der Besucherzugriffe. Matomo wird auf unserem eigenen Server betrieben, sodass alle Analysedaten bei uns verbleiben und nicht an Dritte weitergegeben werden.
             </p>
