@@ -718,7 +718,7 @@ td:last-child {
 /* Smooth Animations */
 @keyframes fadeIn {
     from {
-        opacity: 0;
+        opacity: 0.01;
         transform: translateY(20px);
     }
     to {
@@ -1490,7 +1490,7 @@ a.button:disabled {
 
 .group-card input[type="radio"] {
     position: absolute;
-    opacity: 0;
+    opacity: 0.01;
     cursor: pointer;
 }
 
