@@ -116,6 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- End Matomo Code -->
 </head>
 <body>
+    <?php include 'includes/navigation.php'; ?>
+    
     <header>
         <a href="index.php" title="Zur Startseite">
             <img src="images/logo.png" alt="Wichtel Logo">

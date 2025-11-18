@@ -1766,5 +1766,747 @@ a.button:disabled {
     }
 }
 
-/* ...existing code... */
+/* ========================================
+   Navigation Styles
+   ======================================== */
+
+.main-nav {
+    background: linear-gradient(135deg, #2b2d42 0%, #3a3d5c 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0.5rem 0;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.nav-logo:hover {
+    opacity: 0.8;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    display: block;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link-primary {
+    background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+}
+
+.nav-link-primary:hover {
+    background: linear-gradient(135deg, #d62828 0%, #c1121f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    gap: 4px;
+}
+
+.nav-toggle span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+.nav-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* ========================================
+   Content Pages (FAQ, Firmenwichteln, etc.)
+   ======================================== */
+
+.content-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 4rem;
+    background: linear-gradient(135deg, #2b2d42 0%, #3a3d5c 100%);
+    padding: 4rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: headerPulse 15s ease-in-out infinite;
+}
+
+.page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+}
+
+/* Emojis in page titles should display in full color */
+.page-title::after {
+    content: none;
+}
+
+.page-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.breadcrumb {
+    font-size: 0.9rem;
+    color: #5f6368;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb a {
+    color: #e63946;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.content-section {
+    margin-bottom: 3rem;
+}
+
+.content-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #2b2d42;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #e63946;
+}
+
+.content-section h3 {
+    font-size: 1.5rem;
+    color: #2b2d42;
+    margin: 2rem 0 1rem;
+}
+
+.content-section p {
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: #3a3d4a;
+    font-size: 1.05rem;
+}
+
+.content-section ul, 
+.content-section ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.content-section li {
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+    color: #3a3d4a;
+}
+
+.highlight-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 4px solid #e63946;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.highlight-box h3 {
+    margin-top: 0;
+    color: #e63946;
+}
+
+.highlight-box p {
+    margin-bottom: 1rem;
+    color: #3a3d4a;
+}
+
+.highlight-box ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.highlight-box li {
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+    color: #3a3d4a;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    text-align: center;
+    margin: 4rem 0;
+}
+
+.cta-section h2 {
+    color: white;
+    border: none;
+    margin-bottom: 1rem;
+    background: none;
+    -webkit-text-fill-color: white;
+}
+
+.cta-section p {
+    color: rgba(255,255,255,0.95);
+    margin-bottom: 2rem;
+}
+
+.cta-button-white {
+    background: white;
+    color: #e63946;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.cta-button-white:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+}
+
+/* ========================================
+   Variant Cards (Was ist Wichteln)
+   ======================================== */
+
+.variant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.variant-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.variant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.variant-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.variant-card h3 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    color: #2b2d42;
+}
+
+.variant-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #5f6368;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Idea Cards (Wichtel-Ideen)
+   ======================================== */
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.filter-tab {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.filter-tab:hover {
+    border-color: #e63946;
+    color: #e63946;
+}
+
+.filter-tab.active {
+    background: #e63946;
+    color: white;
+    border-color: #e63946;
+}
+
+.ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.idea-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.idea-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: #e63946;
+}
+
+.idea-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.idea-category {
+    display: inline-block;
+    background: #f8f9fa;
+    color: #5f6368;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.idea-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2b2d42;
+    margin-bottom: 0.75rem;
+}
+
+.idea-description {
+    color: #5f6368;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.idea-price {
+    color: #e63946;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   Step Cards (Firmenwichteln)
+   ======================================== */
+
+.step-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.step-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 2rem;
+    background: #e63946;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.step-card h3 {
+    margin: 1rem 0 1rem;
+    font-size: 1.25rem;
+    color: #2b2d42;
+}
+
+.step-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #5f6368;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Benefit Cards (Firmenwichteln)
+   ======================================== */
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.benefit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.benefit-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-card h3 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    color: #2b2d42;
+}
+
+.benefit-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #5f6368;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Do's & Don'ts (Firmenwichteln)
+   ======================================== */
+
+.dos-donts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.do-box, 
+.dont-box {
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.do-box {
+    background: #d4edda;
+    border: 2px solid #28a745;
+}
+
+.dont-box {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+}
+
+.do-box h3 {
+    color: #28a745;
+    margin-top: 0;
+}
+
+.dont-box h3 {
+    color: #dc3545;
+    margin-top: 0;
+}
+
+.do-box ul, 
+.dont-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+/* ========================================
+   FAQ Styles
+   ======================================== */
+
+.faq-categories {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.faq-category-btn {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    color: #2b2d42;
+}
+
+.faq-category-btn:hover,
+.faq-category-btn.active {
+    background: #e63946;
+    color: white;
+    border-color: #e63946;
+}
+
+.faq-section {
+    margin-bottom: 3rem;
+}
+
+.faq-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #2b2d42;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #e63946;
+}
+
+.faq-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2b2d42;
+    user-select: none;
+}
+
+.faq-question:hover {
+    color: #e63946;
+}
+
+.faq-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+    color: #e63946;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-out;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 1000px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: #3a3d4a;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.faq-answer ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.faq-answer li {
+    color: #3a3d4a;
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+}
+
+.faq-answer strong {
+    color: #2b2d42;
+}
+
+.faq-answer a {
+    color: #e63946;
+    text-decoration: none;
+}
+
+.faq-answer a:hover {
+    text-decoration: underline;
+}
+
+/* ========================================
+   Responsive Styles
+   ======================================== */
+
+/* Mobile Navigation */
+@media (max-width: 968px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .nav-toggle {
+        display: flex;
+    }
+    
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #2b2d42 0%, #3a3d5c 100%);
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .nav-menu.active {
+        max-height: 500px;
+    }
+    
+    .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .content-page {
+        padding: 2rem 1rem;
+    }
+    
+    .page-header {
+        padding: 3rem 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .page-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .content-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .faq-question {
+        font-size: 1rem;
+        padding: 1.25rem;
+    }
+    
+    .dos-donts {
+        grid-template-columns: 1fr;
+    }
+    
+    .ideas-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 

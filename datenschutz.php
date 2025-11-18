@@ -44,6 +44,8 @@
     <!-- End Matomo Code -->
 </head>
 <body>
+    <?php include 'includes/navigation.php'; ?>
+    
     <header>
         <a href="index.php">
             <img src="images/logo.png" alt="Wichtel Logo">

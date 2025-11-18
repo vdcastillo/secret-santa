@@ -45,6 +45,8 @@
     <!-- End Matomo Code -->
 </head>
 <body>
+    <?php include 'includes/navigation.php'; ?>
+    
     <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
         <div class="notification success" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; max-width: 500px; width: 90%;">
             Die Gruppe wurde erfolgreich gelöscht.
