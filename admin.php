@@ -108,6 +108,59 @@ if (isset($_POST['update_participant_email'])) {
     }
 }
 
+// E-Mail erneut senden
+if (isset($_POST['resend_email'])) {
+    $participant_id = intval($_POST['participant_id']);
+    
+    // Prüfe ob Gruppe ausgelost wurde und Teilnehmer zur Gruppe gehört
+    if (!$group['is_drawn']) {
+        $email_error = "Die Auslosung wurde noch nicht durchgeführt.";
+    } else {
+        $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `id` = ? AND `group_id` = ?");
+        $stmt->execute([$participant_id, $group['id']]);
+        $participant = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$participant) {
+            $email_error = "Teilnehmer nicht gefunden.";
+        } elseif (empty($participant['email'])) {
+            $email_error = "Teilnehmer hat keine E-Mail-Adresse hinterlegt.";
+        } elseif (empty($participant['assigned_to'])) {
+            $email_error = "Diesem Teilnehmer wurde noch keine Person zugewiesen.";
+        } else {
+            // Zugewiesenen Teilnehmer abrufen
+            $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `id` = ?");
+            $stmt->execute([$participant['assigned_to']]);
+            $assigned = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($assigned) {
+                // Gruppendetails abrufen
+                $group_budget = $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "Nicht festgelegt";
+                $group_description = $group['description'] ?: "Keine Beschreibung.";
+                $gift_exchange_date = $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt";
+
+                // Erstelle HTML-E-Mail
+                $subject = 'Dein Wichtelpartner 🎁';
+                $html_message = create_html_email(
+                    $participant['name'],
+                    $assigned['name'],
+                    $assigned['wishlist'] ?? '',
+                    $group_budget,
+                    $group_description,
+                    $gift_exchange_date
+                );
+
+                if (send_email($participant['email'], $subject, $html_message, true)) {
+                    $email_success = "E-Mail erfolgreich an " . htmlspecialchars($participant['name']) . " gesendet.";
+                } else {
+                    $email_error = "Fehler beim Versenden der E-Mail an " . htmlspecialchars($participant['name']) . ".";
+                }
+            } else {
+                $email_error = "Zugewiesener Teilnehmer nicht gefunden.";
+            }
+        }
+    }
+}
+
 // Teilnehmer löschen
 if (isset($_GET['delete'])) {
     $participant_id = intval($_GET['delete']);
@@ -331,68 +384,7 @@ if (isset($_POST['draw'])) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
     <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Zusätzliche Styles spezifisch für admin.php */
-        
-        /* Teilnehmer Tabelle - Verbesserte Spaltenbreiten */
-        table.participants-table th:nth-child(1) { width: 20%; } /* Name */
-        table.participants-table th:nth-child(2) { width: 35%; } /* E-Mail */
-        table.participants-table th:nth-child(3) { width: 30%; } /* Link */
-        table.participants-table th:nth-child(4) { width: 15%; text-align: center; } /* Aktionen */
-        
-        /* Verhindere dass die Tabelle zu breit wird */
-        table.participants-table {
-            table-layout: fixed;
-            width: 100%;
-        }
-        
-        /* Überschreibe das globale td:last-child flexbox */
-        table.participants-table td {
-            display: table-cell;
-            vertical-align: middle;
-        }
-        
-        table.participants-table td:nth-child(4) {
-            text-align: center;
-        }
-        
-        /* E-Mail Input Styling */
-        table.participants-table td form input[type="email"] {
-            font-size: 0.9rem;
-        }
-        
-        /* Button Styling in Tabelle */
-        table.participants-table .button.small {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
-            min-width: auto;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Link Container */
-        table.participants-table .link-container {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        /* Responsive Anpassungen */
-        @media (max-width: 768px) {
-            table.participants-table th:nth-child(3) { 
-                width: 25%; 
-            }
-            table.participants-table td form {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-            table.participants-table td form input[type="email"] {
-                min-width: 100%;
-            }
-        }
-    </style>
+    
     <!-- JavaScript für Kopieren-Button -->
     <script>
         function copyToClipboard(elementId) {
@@ -514,6 +506,18 @@ if (isset($_POST['draw'])) {
                 <?php echo htmlspecialchars($participant_error); ?>
             </div>
         <?php endif; ?>
+        
+        <?php if (isset($email_success)): ?>
+            <div class="notification success">
+                <?php echo $email_success; ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($email_error)): ?>
+            <div class="notification error">
+                <?php echo htmlspecialchars($email_error); ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Gruppendetails bearbeiten -->
         <h2>Gruppendetails</h2>
@@ -567,74 +571,91 @@ if (isset($_POST['draw'])) {
         <hr>
         
         <!-- Teilnehmerliste anzeigen -->
-        <h2>Teilnehmer</h2>
+        <h2>Teilnehmer (<?php echo count($participants); ?>)</h2>
         <?php if ($participants): ?>
-            <table class="participants-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>E-Mail</th>
-                        <th>Teilnehmer-Link</th>
-                        <?php if (!$group['is_drawn']): ?>
-                            <th>Aktionen</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($participants as $p): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($p['name'] ?? ''); ?></td>
-                            <td>
-                                <form method="POST" style="display: flex; gap: 0.5rem; align-items: center; margin: 0;">
-                                    <input type="hidden" name="participant_id" value="<?php echo $p['id']; ?>">
+            <div class="participants-grid">
+                <?php foreach ($participants as $p): ?>
+                    <div class="participant-card">
+                        <div class="participant-header">
+                            <div class="participant-info">
+                                <h3 class="participant-name"><?php echo htmlspecialchars($p['name'] ?? ''); ?></h3>
+                                <div class="participant-email">
+                                    <?php if (!empty($p['email'])): ?>
+                                        <span class="email-display">✉️ <?php echo htmlspecialchars($p['email']); ?></span>
+                                    <?php else: ?>
+                                        <span class="email-missing">⚠️ Keine E-Mail</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="participant-actions">
+                            <?php if (!empty($p['participant_token'])): ?>
+                                <button type="button"
+                                        class="action-btn copy-btn" 
+                                        onclick="copyToClipboard('participant-link-<?php echo $p['id']; ?>')"
+                                        title="Teilnehmer-Link kopieren">
+                                    <span class="btn-icon">📋</span>
+                                    <span class="btn-text">Link kopieren</span>
+                                </button>
+                                <span id="participant-link-<?php echo $p['id']; ?>" 
+                                      data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($p['participant_token']))); ?>"
+                                      style="display: none;"></span>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            $can_send_email = $group['is_drawn'] && !empty($p['email']) && !empty($p['assigned_to']);
+                            ?>
+                            <form method="POST" class="action-form">
+                                <input type="hidden" name="participant_id" value="<?php echo $p['id']; ?>">
+                                <button type="submit" 
+                                        name="resend_email" 
+                                        class="action-btn email-btn <?php echo !$can_send_email ? 'disabled' : ''; ?>"
+                                        title="<?php echo $can_send_email ? 'E-Mail erneut senden' : 'E-Mail kann nicht gesendet werden (keine E-Mail-Adresse oder Auslosung nicht durchgeführt)'; ?>"
+                                        <?php echo !$can_send_email ? 'disabled' : ''; ?>
+                                        <?php echo $can_send_email ? 'onclick="return confirm(\'E-Mail mit Wichtelpartner-Info an ' . htmlspecialchars($p['name']) . ' senden?\');"' : ''; ?>>
+                                    <span class="btn-icon">📧</span>
+                                    <span class="btn-text">E-Mail senden</span>
+                                </button>
+                            </form>
+                            
+                            <?php if (!$group['is_drawn']): ?>
+                                <a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete=<?php echo urlencode($p['id']); ?>" 
+                                   class="action-btn delete-btn"
+                                   onclick="return confirm('Möchtest du <?php echo htmlspecialchars($p['name']); ?> wirklich löschen?');">
+                                    <span class="btn-icon">🗑️</span>
+                                    <span class="btn-text">Löschen</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="participant-email-edit">
+                            <form method="POST" class="email-edit-form">
+                                <input type="hidden" name="participant_id" value="<?php echo $p['id']; ?>">
+                                <div class="email-edit-group">
                                     <input type="email" 
                                            name="participant_email" 
                                            value="<?php echo htmlspecialchars($p['email'] ?? ''); ?>" 
-                                           placeholder="email@example.com"
-                                           style="flex: 1; min-width: 180px; padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px;">
+                                           placeholder="E-Mail hinzufügen..."
+                                           class="email-edit-input">
                                     <button type="submit" 
                                             name="update_participant_email" 
-                                            class="button secondary small"
-                                            style="white-space: nowrap;">
-                                        💾
-                                    </button>
-                                </form>
-                            </td>
-                            <td>
-                                <?php if (!empty($p['participant_token'])): ?>
-                                <div class="link-container">
-                                    <span id="participant-link-<?php echo $p['id']; ?>" 
-                                          data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($p['participant_token']))); ?>"
-                                          style="font-size: 0.8rem; color: #666; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"
-                                          title="Klicke auf 📋 um den vollständigen Link zu kopieren">
-                                    </span>
-                                    <button type="button"
-                                            class="button secondary small" 
-                                            onclick="copyToClipboard('participant-link-<?php echo $p['id']; ?>')"
-                                            title="Link kopieren"
-                                            style="white-space: nowrap; padding: 0.5rem 0.75rem;">
-                                        📋
+                                            class="email-edit-btn"
+                                            title="E-Mail speichern">
+                                        💾 Speichern
                                     </button>
                                 </div>
-                                <?php else: ?>
-                                <span style="color: #999; font-style: italic; font-size: 0.85rem;">Kein Token</span>
-                                <?php endif; ?>
-                            </td>
-                            <?php if (!$group['is_drawn']): ?>
-                                <td style="text-align: center;">
-                                    <a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete=<?php echo urlencode($p['id']); ?>" 
-                                       class="button error small"
-                                       onclick="return confirm('Möchtest du <?php echo htmlspecialchars($p['name']); ?> wirklich löschen?');">
-                                        🗑️
-                                    </a>
-                                </td>
-                            <?php endif; ?>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php else: ?>
-            <p>Noch keine Teilnehmer.</p>
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <p class="empty-text">Noch keine Teilnehmer registriert.</p>
+                <p class="empty-hint">Teile den Einladungslink oben, damit sich Teilnehmer anmelden können.</p>
+            </div>
         <?php endif; ?>
 
         <!-- Ausschlüsse verwalten -->

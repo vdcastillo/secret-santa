@@ -2509,4 +2509,539 @@ a.button:disabled {
     }
 }
 
+/* ========================================
+   Admin Page Styles
+   ======================================== */
+
+/* Participants Grid Layout */
+.participants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Participant Card */
+.participant-card {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.participant-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: var(--secondary-color);
+}
+
+/* Participant Header */
+.participant-header {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.participant-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.participant-name {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.participant-email {
+    font-size: 0.95rem;
+}
+
+.email-display {
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.email-missing {
+    color: #999;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Participant Actions */
+.participant-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+.btn-text {
+    white-space: nowrap;
+}
+
+/* Copy Button */
+.copy-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+}
+
+.copy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Email Button */
+.email-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-color: #f5576c;
+    color: white;
+}
+
+.email-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+}
+
+/* Delete Button */
+.delete-btn {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    border-color: #fa709a;
+    color: #333;
+}
+
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(250, 112, 154, 0.4);
+}
+
+/* Disabled button state */
+.action-btn.disabled,
+.action-btn:disabled {
+    background: linear-gradient(135deg, #cccccc 0%, #999999 100%) !important;
+    border-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+.action-btn.disabled:hover,
+.action-btn:disabled:hover {
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.action-form {
+    flex: 1;
+    min-width: 140px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.action-form .action-btn {
+    width: 100%;
+    margin: 0;
+}
+
+/* Email Edit Section */
+.participant-email-edit {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.email-edit-form {
+    width: 100%;
+}
+
+.email-edit-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.email-edit-input {
+    flex: 1;
+    padding: 0.7rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.email-edit-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.email-edit-btn {
+    padding: 0.7rem 1.2rem;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.email-edit-btn:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    margin-top: 1.5rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.empty-hint {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .participants-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .participant-card {
+        padding: 1.25rem;
+    }
+    
+    .participant-name {
+        font-size: 1.2rem;
+    }
+    
+    .participant-actions {
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        min-width: 120px;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .participant-card {
+        padding: 1rem;
+    }
+    
+    .participant-name {
+        font-size: 1.1rem;
+    }
+    
+    .participant-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+        min-width: 0;
+    }
+    
+    .action-form {
+        width: 100%;
+        min-width: 0;
+    }
+    
+    .email-edit-group {
+        flex-direction: column;
+    }
+    
+    .email-edit-btn {
+        width: 100%;
+    }
+}
+
+/* Old Table Styles - Kept for other admin tables */
+/* Admin Page Styles */
+
+/* Teilnehmer Tabelle - Verbesserte Spaltenbreiten */
+table.participants-table th:nth-child(1) { width: 18%; } /* Name */
+table.participants-table th:nth-child(2) { width: 30%; } /* E-Mail */
+table.participants-table th:nth-child(3) { width: 25%; } /* Link */
+table.participants-table th:nth-child(4) { width: 27%; text-align: center; } /* Aktionen */
+
+/* Verhindere dass die Tabelle zu breit wird */
+table.participants-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+/* Überschreibe das globale td:last-child flexbox */
+table.participants-table td {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.75rem 0.5rem;
+}
+
+table.participants-table td:nth-child(4) {
+    text-align: center;
+}
+
+/* E-Mail Update Form */
+.email-update-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0;
+}
+
+.email-update-form .email-input {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.4rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* Link Text Styling */
+.link-text {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.no-token-text {
+    color: #999;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Inline Form für Action Buttons */
+.inline-form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* Button Styling in Tabelle */
+table.participants-table .button.small {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.25rem;
+    white-space: nowrap;
+}
+
+/* Action Buttons Container */
+table.participants-table .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive Anpassungen für Tablets */
+@media (max-width: 968px) {
+    table.participants-table {
+        font-size: 0.9rem;
+    }
+    
+    table.participants-table th,
+    table.participants-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    table.participants-table .button.small {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Responsive Anpassungen für Mobile */
+@media (max-width: 768px) {
+    /* Tabelle in Card-Layout umwandeln */
+    table.participants-table {
+        table-layout: auto;
+    }
+    
+    table.participants-table thead {
+        display: none;
+    }
+    
+    table.participants-table,
+    table.participants-table tbody,
+    table.participants-table tr,
+    table.participants-table td {
+        display: block;
+        width: 100%;
+    }
+    
+    table.participants-table tr {
+        margin-bottom: 1.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    table.participants-table td {
+        padding: 0.75rem 0;
+        border: none;
+        text-align: left !important;
+        position: relative;
+        padding-left: 0;
+    }
+    
+    table.participants-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* E-Mail Form auf Mobile */
+    .email-update-form {
+        flex-direction: row;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .email-update-form .email-input {
+        min-width: 0;
+        flex: 1;
+        font-size: 1rem;
+        padding: 0.6rem;
+    }
+    
+    .email-update-form .button.small {
+        padding: 0.6rem 1rem;
+        font-size: 1.2rem;
+    }
+    
+    /* Link Container auf Mobile */
+    .link-text {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    /* Action Buttons auf Mobile */
+    table.participants-table .action-buttons {
+        justify-content: flex-start;
+        gap: 0.5rem;
+        flex-direction: row;
+    }
+    
+    table.participants-table .action-buttons .button.small {
+        flex: 1;
+        min-width: 120px;
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .inline-form {
+        flex: 1;
+    }
+    
+    .inline-form .button.small {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Noch kleinere Screens */
+    table.participants-table tr {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    table.participants-table td {
+        padding: 0.5rem 0;
+    }
+    
+    table.participants-table td::before {
+        font-size: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    /* E-Mail Form */
+    .email-update-form .email-input {
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+    
+    /* Action Buttons vertikal stapeln */
+    table.participants-table .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    table.participants-table .action-buttons .button.small {
+        width: 100%;
+        justify-content: center;
+        min-width: 0;
+    }
+    
+    .inline-form {
+        width: 100%;
+    }
+}
+
 
