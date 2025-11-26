@@ -418,83 +418,50 @@ if ($show_group_selector) {
     <meta name="msapplication-TileImage" content="/images/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Zusätzliche Styles spezifisch für participant.php (falls nötig) */
-        .ad-container {
-            margin: 2rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-        }
-        .ad-label {
-            font-size: 0.75rem;
-            color: #999;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-        }
-        /* Test Ad Placeholder */
-        .ad-test-placeholder {
-            background: #e3f2fd;
-            border: 3px dashed #2196F3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1976D2;
-            font-size: 1rem;
-            font-family: monospace;
-            font-weight: bold;
-            padding: 2rem;
-            min-height: 250px;
-            text-align: center;
-        }
-        .ad-test-placeholder.sidebar-size {
-            min-height: 600px;
-        }
-        /* Sidebar Ad Container (nur Desktop) */
-        .ad-sidebar {
-            display: none;
-        }
-        @media (min-width: 1200px) {
-            .content-with-sidebar {
-                display: flex;
-                gap: 2rem;
-                align-items: flex-start;
-            }
-            .main-content {
-                flex: 1;
-                min-width: 0;
-            }
-            .ad-sidebar {
-                display: block;
-                width: 300px;
-                position: sticky;
-                top: 2rem;
-                flex-shrink: 0;
-            }
-            .ad-sidebar .ad-container {
-                margin: 0;
-                min-height: 600px;
-            }
-        }
-    </style>
     <!-- JavaScript für Kopieren-Button -->
     <script>
         function copyToClipboard(elementId) {
-            var copyText = document.getElementById(elementId).innerText;
+            var element = document.getElementById(elementId);
+            var copyText = element.getAttribute('data-url') || element.innerText || element.textContent;
+            
+            // Moderne Clipboard API (bevorzugt)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText).then(function() {
+                    // Zeige Erfolgs-Feedback
+                    var btn = event.target.closest('button');
+                    var originalText = btn.innerHTML;
+                    btn.innerHTML = '✓ Kopiert!';
+                    btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    setTimeout(function() {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(function(err) {
+                    fallbackCopy(copyText);
+                });
+            } else {
+                fallbackCopy(copyText);
+            }
+        }
+        
+        function fallbackCopy(text) {
             var tempInput = document.createElement("textarea");
-            tempInput.value = copyText;
+            tempInput.value = text;
+            tempInput.style.position = "fixed";
+            tempInput.style.opacity = "0";
             document.body.appendChild(tempInput);
             tempInput.select();
-            tempInput.setSelectionRange(0, 99999); // Für mobile Geräte
-            document.execCommand("copy");
+            tempInput.setSelectionRange(0, 99999);
+            try {
+                document.execCommand("copy");
+                alert("Link kopiert!");
+            } catch (err) {
+                alert("Fehler beim Kopieren. Bitte manuell kopieren.");
+            }
             document.body.removeChild(tempInput);
-            alert("Link kopiert: " + copyText);
         }
     </script>
     <!-- Matomo -->
@@ -516,147 +483,216 @@ if ($show_group_selector) {
     <!-- End Matomo Code -->
 </head>
 <body>
-    <header>
-        <a href="index.php" title="Zur Startseite">
-            <img src="images/logo.png" alt="Wichtel Logo">
-        </a>
-    </header>
-    <div class="container">
-        <?php 
-        // Sidebar Ad (Option 3) - wird nur auf Desktop angezeigt
-        $show_sidebar = defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
-                       defined('GOOGLE_ADS_SHOW_OPTION3') && GOOGLE_ADS_SHOW_OPTION3;
-        
-        if ($show_sidebar): 
-        ?>
-        <div class="content-with-sidebar">
-            <div class="main-content">
-        <?php endif; ?>
-        
-        <h1>Willkommen, <?php echo htmlspecialchars($participant['name']); ?>!</h1>
-        <p>Gruppe: <?php echo htmlspecialchars($group['name']); ?></p>
+    <!-- Navigation -->
+    <?php include 'includes/navigation.php'; ?>
+    
+    <div class="container" style="margin-top: 2rem;">
+        <!-- Welcome Card -->
+        <div class="participant-info-card">
+            <div class="participant-welcome">
+                <h1 class="participant-greeting">Willkommen, <?php echo htmlspecialchars($participant['name']); ?>! 🎄</h1>
+                <p class="participant-group-name">📦 Gruppe: <?php echo htmlspecialchars($group['name']); ?></p>
+            </div>
+        </div>
         
         <?php if (isset($wishlist_success)): ?>
             <div class="notification success">
-                <?php echo htmlspecialchars($wishlist_success); ?>
+                ✓ <?php echo htmlspecialchars($wishlist_success); ?>
             </div>
         <?php endif; ?>
         
-		        <?php if ($group['is_drawn']): ?>
-            <?php if ($assigned): ?>
-                <h2>Dein Wichtelpartner:</h2>
-                <p style="font-size: 1.3rem; font-weight: 600; color: var(--primary-color);"><?php echo htmlspecialchars($assigned['name']); ?></p>
+        <!-- Partner Reveal Card -->
+        <?php if ($group['is_drawn']): ?>
+            <div class="partner-reveal-card">
+                <div class="partner-reveal-header">
+                    <span class="partner-reveal-icon">🎁</span>
+                    <h2 class="partner-reveal-title">Dein Wichtelpartner</h2>
+                </div>
                 
-                <?php if (!empty($assigned['wishlist'])): ?>
-                    <h3>Wunschliste von <?php echo htmlspecialchars($assigned['name']); ?>:</h3>
-                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--secondary-color); margin-bottom: 1.5rem;">
-                        <p style="white-space: pre-wrap; margin: 0;"><?php echo htmlspecialchars($assigned['wishlist']); ?></p>
+                <?php if ($assigned): ?>
+                    <div class="partner-name-container">
+                        <p class="partner-name"><?php echo htmlspecialchars($assigned['name']); ?></p>
+                    </div>
+                    
+                    <?php if (!empty($assigned['wishlist'])): ?>
+                        <div class="partner-wishlist-section">
+                            <h3 class="wishlist-heading">
+                                <span class="wishlist-icon">📝</span>
+                                Wunschliste von <?php echo htmlspecialchars($assigned['name']); ?>
+                            </h3>
+                            <div class="wishlist-display">
+                                <p><?php echo nl2br(htmlspecialchars($assigned['wishlist'])); ?></p>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-wishlist">
+                            <span class="empty-wishlist-icon">📋</span>
+                            <p><?php echo htmlspecialchars($assigned['name']); ?> hat noch keine Wunschliste hinterlegt.</p>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="notification error">
+                        ⚠️ Dein Wichtelpartner konnte nicht gefunden werden.
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <?php 
+            // Google Ad Position 1: Nach Wichtelpartner-Bereich
+            if (defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
+                defined('GOOGLE_ADS_SHOW_OPTION1') && GOOGLE_ADS_SHOW_OPTION1): 
+                $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
+            ?>
+            <div class="ad-container">
+                <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 1)' : 'Anzeige'; ?></div>
+                <?php if ($is_testing): ?>
+                    <div class="ad-test-placeholder">
+                        📊 Google Ad Placeholder<br>
+                        Position 1: Nach Wichtelpartner<br>
+                        Responsive Display Ad
                     </div>
                 <?php else: ?>
-                    <p class="text-muted"><?php echo htmlspecialchars($assigned['name']); ?> hat noch keine Wunschliste hinterlegt.</p>
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                         crossorigin="anonymous"></script>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
+                         data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION1); ?>"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
                 <?php endif; ?>
-            <?php else: ?>
-                <div class="notification error">
-                    Dein Wichtelpartner konnte nicht gefunden werden.
-                </div>
+            </div>
             <?php endif; ?>
         <?php else: ?>
-            <p>Die Auslosung wurde noch nicht durchgeführt. Bitte schaue später wieder vorbei.</p>
+            <div class="section-card waiting-card">
+                <div class="waiting-icon">⏳</div>
+                <h2>Auslosung ausstehend</h2>
+                <p>Die Auslosung wurde noch nicht durchgeführt. Bitte schaue später wieder vorbei!</p>
+            </div>
         <?php endif; ?>
         
-        <?php 
-        // Google Ad Position 1: Nach Wichtelpartner-Bereich (empfohlen)
-        if (defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
-            defined('GOOGLE_ADS_SHOW_OPTION1') && GOOGLE_ADS_SHOW_OPTION1): 
+        <!-- Wunschliste Section -->
+        <!-- Wunschliste Section -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <span class="section-icon">📝</span>
+                <h2>Deine Wunschliste</h2>
+            </div>
             
-            $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
-        ?>
-        <div class="ad-container">
-            <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 1)' : 'Anzeige'; ?></div>
-            <?php if ($is_testing): ?>
-                <div class="ad-test-placeholder">
-                    📊 Google Ad Placeholder<br>
-                    Position 1: Nach Wichtelpartner<br>
-                    Responsive Display Ad
-                </div>
+            <?php if (!$group['is_drawn']): ?>
+                <p class="section-description">Trage hier deine Wünsche ein. Dein Wichtelpartner wird diese nach der Auslosung sehen können.</p>
+                <form method="POST" class="wishlist-form">
+                    <div class="form-group">
+                        <label for="wishlist" class="form-label">
+                            <span>Deine Wünsche</span>
+                            <span class="form-hint">z.B. Bücher, Schokolade, Selbstgemachtes...</span>
+                        </label>
+                        <textarea id="wishlist" 
+                                  name="wishlist" 
+                                  rows="6" 
+                                  class="form-textarea"
+                                  placeholder="- Bücher über...&#10;- Schokolade&#10;- Etwas Selbstgemachtes&#10;- Überraschung!"><?php echo htmlspecialchars($participant['wishlist'] ?? ''); ?></textarea>
+                    </div>
+                    <button type="submit" name="update_wishlist" class="button primary">
+                        <span>💾</span>
+                        Wunschliste speichern
+                    </button>
+                </form>
             <?php else: ?>
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
-                     crossorigin="anonymous"></script>
-                <!-- Participant Area Ad - Position 1 -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
-                     data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION1); ?>"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+                <?php if (!empty($participant['wishlist'])): ?>
+                    <div class="wishlist-display locked">
+                        <div class="wishlist-locked-header">
+                            <span class="lock-icon">🔒</span>
+                            <span>Deine gespeicherte Wunschliste</span>
+                        </div>
+                        <p><?php echo nl2br(htmlspecialchars($participant['wishlist'])); ?></p>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-wishlist">
+                        <span class="empty-wishlist-icon">📋</span>
+                        <p>Du hast keine Wunschliste hinterlegt.</p>
+                    </div>
+                <?php endif; ?>
+                <p class="text-muted">
+                    <span class="info-icon">ℹ️</span>
+                    Die Wunschliste kann nach der Auslosung nicht mehr geändert werden.
+                </p>
             <?php endif; ?>
         </div>
-        <?php endif; ?>
         
-        <hr>
-        
-        <!-- Wunschliste bearbeiten -->
-        <h2>Deine Wunschliste</h2>
-        <?php if (!$group['is_drawn']): ?>
-            <p>Trage hier deine Wünsche ein. Dein Wichtelpartner wird diese nach der Auslosung sehen können.</p>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="wishlist">Wunschliste:</label>
-                    <textarea id="wishlist" name="wishlist" rows="6" placeholder="z.B.&#10;- Bücher über...&#10;- Schokolade&#10;- Etwas Selbstgemachtes&#10;- Überraschung!"><?php echo htmlspecialchars($participant['wishlist'] ?? ''); ?></textarea>
+        <!-- Gruppendetails Section -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <span class="section-icon">ℹ️</span>
+                <h2>Gruppendetails</h2>
+            </div>
+            
+            <div class="group-info-grid">
+                <div class="group-info-item">
+                    <span class="info-label">💰 Budget</span>
+                    <span class="info-value">
+                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "Nicht festgelegt"; ?>
+                    </span>
                 </div>
-                <button type="submit" name="update_wishlist" class="button primary">Wunschliste speichern</button>
-            </form>
-        <?php else: ?>
-            <?php if (!empty($participant['wishlist'])): ?>
-                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border-left: 4px solid var(--primary-color);">
-                    <p style="white-space: pre-wrap; margin: 0;"><?php echo htmlspecialchars($participant['wishlist']); ?></p>
+                <div class="group-info-item">
+                    <span class="info-label">📅 Geschenkübergabe</span>
+                    <span class="info-value">
+                        <?php echo $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt"; ?>
+                    </span>
                 </div>
-            <?php else: ?>
-                <p class="text-muted">Du hast keine Wunschliste hinterlegt.</p>
-            <?php endif; ?>
-            <p class="text-muted" style="margin-top: 1rem;">Die Wunschliste kann nach der Auslosung nicht mehr geändert werden.</p>
-        <?php endif; ?>
-		
-        <hr>
-        
-        <h2>Gruppendetails</h2>
-        <ul>
-            <li><strong>Budget:</strong> <?php echo $group['budget'] !== null ? htmlspecialchars(number_format($group['budget'], 2)) . " CHF" : "Nicht festgelegt"; ?></li>
-            <li><strong>Beschreibung:</strong> <?php echo htmlspecialchars($group['description'] ?: "Keine Beschreibung."); ?></li>
-            <li><strong>Datum der Geschenkübergabe:</strong> <?php echo $group['gift_exchange_date'] ? htmlspecialchars(date('d.m.Y', strtotime($group['gift_exchange_date']))) : "Nicht festgelegt"; ?></li>
-        </ul>
+                <?php if (!empty($group['description'])): ?>
+                <div class="group-info-item full-width">
+                    <span class="info-label">📄 Beschreibung</span>
+                    <span class="info-value"><?php echo htmlspecialchars($group['description']); ?></span>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
 
-        <!-- Eigener Teilnehmer-Link anzeigen -->
-        <h2>Dein Link</h2>
-        <p>Du kannst diesen Link verwenden, um deine Teilnahme zu teilen oder für zukünftige Referenz zu speichern:</p>
-        <pre id="participant-link"><?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?></pre>
-        <button class="button secondary small copy-button" onclick="copyToClipboard('participant-link')">Link kopieren</button>
+        <!-- Teilnehmer-Link Section -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <span class="section-icon">🔗</span>
+                <h2>Dein persönlicher Link</h2>
+            </div>
+            
+            <p class="section-description">Du kannst diesen Link verwenden, um später wieder auf deine Teilnahme zuzugreifen.</p>
+            
+            <div class="link-display-container">
+                <pre id="participant-link" class="link-display" data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?>"><?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?></pre>
+                <button class="button secondary copy-btn" onclick="copyToClipboard('participant-link')">
+                    <span>📋</span>
+                    Link kopieren
+                </button>
+            </div>
+        </div>
 
         <?php
         // Prüfen ob mehrere Gruppen im Cookie gespeichert sind
         $saved_tokens = get_tokens_from_cookie();
         if (count($saved_tokens) > 1):
         ?>
-        <hr>
-        
-        <!-- Navigation für mehrere Gruppen -->
-        <div style="text-align: center; margin-top: 2rem;">
-            <p class="text-muted">Du nimmst an mehreren Wichtel-Gruppen teil.</p>
-            <a href="participant.php" class="button secondary small">🔄 Gruppe wechseln</a>
+        <!-- Multi-Group Navigation -->
+        <div class="multi-group-nav">
+            <p class="multi-group-text">
+                <span class="multi-group-icon">🎁</span>
+                Du nimmst an mehreren Wichtel-Gruppen teil
+            </p>
+            <a href="participant.php" class="button secondary">
+                🔄 Gruppe wechseln
+            </a>
         </div>
         <?php endif; ?>
 
         <?php 
-        // Google Ad Position 2: Am Ende der Seite (vor Footer)
+        // Google Ad Position 2: Am Ende der Seite
         if (defined('GOOGLE_ADS_ENABLED') && GOOGLE_ADS_ENABLED && 
             defined('GOOGLE_ADS_SHOW_OPTION2') && GOOGLE_ADS_SHOW_OPTION2): 
-            
             $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
         ?>
-        <hr>
         <div class="ad-container">
             <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 2)' : 'Anzeige'; ?></div>
             <?php if ($is_testing): ?>
@@ -668,7 +704,6 @@ if ($show_group_selector) {
             <?php else: ?>
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
                      crossorigin="anonymous"></script>
-                <!-- Participant Area Ad - Position 2 -->
                 <ins class="adsbygoogle"
                      style="display:block"
                      data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
@@ -681,43 +716,12 @@ if ($show_group_selector) {
             <?php endif; ?>
         </div>
         <?php endif; ?>
-
-        <?php if ($show_sidebar): ?>
-            </div><!-- .main-content -->
-            
-            <!-- Sidebar Ad (Option 3) - nur Desktop -->
-            <aside class="ad-sidebar">
-                <div class="ad-container">
-                    <div class="ad-label"><?php echo (defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING) ? 'Test-Anzeige (Position 3)' : 'Anzeige'; ?></div>
-                    <?php if (defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING): ?>
-                        <div class="ad-test-placeholder sidebar-size">
-                            📊 Google Ad Placeholder<br>
-                            Position 3: Sidebar (Desktop only)<br>
-                            300x600 Skyscraper<br>
-                            Sticky Position
-                        </div>
-                    <?php else: ?>
-                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
-                             crossorigin="anonymous"></script>
-                        <!-- Participant Area Ad - Sidebar -->
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="<?php echo htmlspecialchars(GOOGLE_ADS_CLIENT); ?>"
-                             data-ad-slot="<?php echo htmlspecialchars(GOOGLE_ADS_SLOT_OPTION3); ?>"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                        <script>
-                             (adsbygoogle = window.adsbygoogle || []).push({});
-                        </script>
-                    <?php endif; ?>
-                </div>
-            </aside>
-        </div><!-- .content-with-sidebar -->
-        <?php endif; ?>
-
     </div>
+    
     <!-- Cookie Banner -->
     <?php include 'cookie-banner.php'; ?>
-
+    
+    <!-- Footer -->
+    <?php include 'includes/footer.php'; ?>
 </body>
 </html>
