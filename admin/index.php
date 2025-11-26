@@ -63,29 +63,73 @@ if (isset($_GET['action']) && isset($_GET['group_id'])) {
     }
 }
 
-// Alle Gruppen abrufen
-$stmt = $pdo->prepare("SELECT * FROM `groups` ORDER BY `name` ASC");
+// Alle Gruppen abrufen mit Teilnehmer- und Ausschluss-Statistiken
+$stmt = $pdo->prepare("
+    SELECT 
+        g.*,
+        COUNT(DISTINCT p.id) as participant_count,
+        COUNT(DISTINCT CASE WHEN p.email IS NOT NULL AND p.email != '' THEN p.id END) as participants_with_email,
+        COUNT(DISTINCT e.id) as exclusion_count
+    FROM `groups` g
+    LEFT JOIN `participants` p ON g.id = p.group_id
+    LEFT JOIN `exclusions` e ON g.id = e.group_id
+    GROUP BY g.id
+    ORDER BY g.name ASC
+");
 $stmt->execute();
 $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Gesamtstatistiken berechnen
+$total_groups = count($groups);
+$total_participants = 0;
+$total_drawn = 0;
+$total_not_drawn = 0;
+
+foreach ($groups as $group) {
+    $total_participants += $group['participant_count'];
+    if ($group['is_drawn']) {
+        $total_drawn++;
+    } else {
+        $total_not_drawn++;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Übersicht - Wichtel</title>
+    <title>Admin Panel - Wichtel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="57x57" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://xn--wichtl-gua.ch/images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://xn--wichtl-gua.ch/images/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://xn--wichtl-gua.ch/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://xn--wichtl-gua.ch/images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://xn--wichtl-gua.ch/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="https://xn--wichtl-gua.ch/images/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="https://xn--wichtl-gua.ch/images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
-    <!-- CSS Stylesheet -->
-    <link rel="stylesheet" href="https://xn--wichtl-gua.ch/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="admin-styles.css">
 </head>
 <body>
-    <header>
+    <div class="admin-header">
         <img src="https://xn--wichtl-gua.ch/images/logo.png" alt="Wichtel Logo">
-    </header>
-    <div class="container">
-        <h1>Admin Übersicht</h1>
+        <h1>Admin Control Panel</h1>
+        <p>Gesamtübersicht aller Wichtel-Gruppen</p>
+    </div>
 
+    <div class="admin-container">
         <?php if (isset($message)): ?>
             <div class="notification success">
                 <?php echo htmlspecialchars($message); ?>
@@ -98,63 +142,155 @@ $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         <?php endif; ?>
 
-        <?php if ($groups): ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Budget</th>
-                        <th>Beschreibung</th>
-                        <th>Geschenkübergabe</th>
-                        <th>Status</th>
-                        <th>Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon primary">🎁</div>
+                    <span class="stat-card-label">Gesamt Gruppen</span>
+                </div>
+                <div class="stat-card-value"><?php echo $total_groups; ?></div>
+                <div class="stat-card-footer">
+                    Aktive Wichtel-Gruppen
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon success">👥</div>
+                    <span class="stat-card-label">Teilnehmer</span>
+                </div>
+                <div class="stat-card-value"><?php echo $total_participants; ?></div>
+                <div class="stat-card-footer">
+                    Registrierte Personen
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon warning">✓</div>
+                    <span class="stat-card-label">Ausgelost</span>
+                </div>
+                <div class="stat-card-value"><?php echo $total_drawn; ?></div>
+                <div class="stat-card-footer">
+                    <?php 
+                    $percentage = $total_groups > 0 ? round(($total_drawn / $total_groups) * 100) : 0;
+                    echo $percentage . '% aller Gruppen';
+                    ?>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon info">⏳</div>
+                    <span class="stat-card-label">Ausstehend</span>
+                </div>
+                <div class="stat-card-value"><?php echo $total_not_drawn; ?></div>
+                <div class="stat-card-footer">
+                    Warten auf Auslosung
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups Section -->
+        <div class="groups-section">
+            <div class="section-header">
+                <h2 class="section-title">Alle Gruppen</h2>
+            </div>
+
+            <?php if ($groups): ?>
+                <div class="groups-grid">
                     <?php foreach ($groups as $group): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($group['name'] ?? ''); ?></td>
-                            <td><?php echo $group['budget'] !== null ? htmlspecialchars(number_format($group['budget'], 2)) . " CHF" : "Nicht festgelegt"; ?></td>
-                            <td><?php echo htmlspecialchars($group['description'] ?? 'Keine Beschreibung.'); ?></td>
-                            <td><?php echo $group['gift_exchange_date'] ? htmlspecialchars(date('d.m.Y', strtotime($group['gift_exchange_date']))) : "Nicht festgelegt"; ?></td>
-                            <td>
-                                <?php if ($group['is_drawn']): ?>
-                                    <span class="status drawn">Ausgelost</span>
-                                <?php else: ?>
-                                    <span class="status not-drawn">Nicht ausgelost</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <!-- Reset Link -->
+                        <div class="group-card">
+                            <div class="group-card-header">
+                                <div>
+                                    <h3 class="group-name"><?php echo htmlspecialchars($group['name'] ?? ''); ?></h3>
+                                    <span class="group-status-badge <?php echo $group['is_drawn'] ? 'drawn' : 'not-drawn'; ?>">
+                                        <?php echo $group['is_drawn'] ? 'Ausgelost' : 'Nicht ausgelost'; ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="group-stats">
+                                <div class="group-stat">
+                                    <span class="group-stat-icon">👥</span>
+                                    <div class="group-stat-content">
+                                        <span class="group-stat-value"><?php echo $group['participant_count']; ?></span>
+                                        <span class="group-stat-label">Teilnehmer</span>
+                                    </div>
+                                </div>
+                                <div class="group-stat">
+                                    <span class="group-stat-icon">✉️</span>
+                                    <div class="group-stat-content">
+                                        <span class="group-stat-value"><?php echo $group['participants_with_email']; ?></span>
+                                        <span class="group-stat-label">Mit E-Mail</span>
+                                    </div>
+                                </div>
+                                <div class="group-stat">
+                                    <span class="group-stat-icon">🚫</span>
+                                    <div class="group-stat-content">
+                                        <span class="group-stat-value"><?php echo $group['exclusion_count']; ?></span>
+                                        <span class="group-stat-label">Ausschlüsse</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="group-details">
+                                <div class="group-detail-item">
+                                    <span class="group-detail-label">💰 Budget</span>
+                                    <span class="group-detail-value">
+                                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "Nicht festgelegt"; ?>
+                                    </span>
+                                </div>
+                                <div class="group-detail-item">
+                                    <span class="group-detail-label">📅 Geschenkübergabe</span>
+                                    <span class="group-detail-value">
+                                        <?php echo $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt"; ?>
+                                    </span>
+                                </div>
+                                <div class="group-detail-item">
+                                    <span class="group-detail-label">📝 Beschreibung</span>
+                                    <span class="group-detail-value">
+                                        <?php 
+                                        $desc = $group['description'] ?? 'Keine Beschreibung';
+                                        echo strlen($desc) > 50 ? substr(htmlspecialchars($desc), 0, 50) . '...' : htmlspecialchars($desc);
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="group-actions">
+                                <a href="https://xn--wichtl-gua.ch/admin.php?token=<?php echo urlencode($group['admin_token']); ?>" 
+                                   class="btn btn-primary">
+                                    <img src="https://xn--wichtl-gua.ch/images/icon-admin.svg" alt="Verwalten" width="16" height="16">
+                                    Verwalten
+                                </a>
+
                                 <a href="index.php?master_token=<?php echo urlencode($master_token); ?>&action=reset&group_id=<?php echo urlencode($group['id']); ?>" 
-                                   class="button secondary action-button" 
+                                   class="btn btn-secondary" 
                                    onclick="return confirm('Möchtest du die Gruppe \"<?php echo htmlspecialchars($group['name']); ?>\" wirklich zurücksetzen?');">
                                     <img src="https://xn--wichtl-gua.ch/images/icon-reset.svg" alt="Reset" width="16" height="16">
                                     Reset
                                 </a>
 
-                                <!-- Delete Link -->
                                 <a href="index.php?master_token=<?php echo urlencode($master_token); ?>&action=delete&group_id=<?php echo urlencode($group['id']); ?>" 
-                                   class="button error action-button" 
-                                   onclick="return confirm('Möchtest du die Gruppe \"<?php echo htmlspecialchars($group['name']); ?>\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.');">
+                                   class="btn btn-danger" 
+                                   onclick="return confirm('⚠️ WARNUNG: Möchtest du die Gruppe \"<?php echo htmlspecialchars($group['name']); ?>\" wirklich PERMANENT löschen?\n\nDiese Aktion kann NICHT rückgängig gemacht werden!');">
                                     <img src="https://xn--wichtl-gua.ch/images/icon-delete.svg" alt="Delete" width="16" height="16">
                                     Löschen
                                 </a>
-
-                                <!-- Manage Link -->
-                                <a href="https://xn--wichtl-gua.ch/admin.php?token=<?php echo urlencode($group['admin_token']); ?>" 
-                                   class="button primary action-button">
-                                    <img src="https://xn--wichtl-gua.ch/images/icon-admin.svg" alt="Verwalten" width="16" height="16">
-                                    Verwalten
-                                </a>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p>Keine Gruppen vorhanden.</p>
-        <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎁</div>
+                    <h3 class="empty-state-title">Keine Gruppen vorhanden</h3>
+                    <p class="empty-state-text">Es wurden noch keine Wichtel-Gruppen erstellt.</p>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 </body>
 </html>
