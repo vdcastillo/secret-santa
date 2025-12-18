@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Servicio de la Aplicación PHP
   app:
@@ -8,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: santa_secreto
     ports:
-      - "8080:80"
+      - "8088:80"
     volumes:
       - .:/var/www/html
     environment:

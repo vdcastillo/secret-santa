@@ -1,11 +1,21 @@
-# Usamos una imagen oficial de PHP con Apache
-FROM php:8.1-apache
+# Use the Alpine variant for a minimal image
+FROM php:8.3-apache
+
+# Install git and any other required extensions
+RUN apt-get update && apt-get install -y git \
+    # You can add more extensions here if needed, e.g., libpng-dev
+    # && docker-php-ext-install gd \
+    # Clean up apt lists to reduce image size
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalamos las extensiones de PHP necesarias para MySQL
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
+# Set the working directory inside the container
+WORKDIR /var/www/html
+
 # Habilitamos el módulo rewrite de Apache (común en apps PHP)
-RUN a2enmod rewrite
+#RUN a2enmod rewrite
 
 # Copiamos los archivos del proyecto al contenedor
 COPY . /var/www/html/
