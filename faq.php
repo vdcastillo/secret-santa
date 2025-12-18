@@ -4,19 +4,19 @@ if (file_exists('config.php')) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>FAQ - Häufig gestellte Fragen zum Online Wichteln | Wichtlä.ch</title>
+    <title>FAQ - Preguntas frecuentes sobre Wichteln en línea | Wichtlä.ch</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Alle Antworten zu Wichtlä.ch: Kosten, Datenschutz, Funktionen, Probleme und Tipps. Finde schnell Hilfe für dein Wichtel-Event!">
-    <meta name="keywords" content="Wichteln FAQ, Wichteln Hilfe, Online Wichteln Fragen, Wichteln Anleitung, Wichteln Support">
+    <meta name="description" content="Todas las respuestas sobre Wichtlä.ch: costos, privacidad, funciones, problemas y consejos. ¡Encuentra ayuda rápida para tu evento de Wichteln!">
+    <meta name="keywords" content="Wichteln FAQ, ayuda Wichteln, preguntas Wichteln en línea, guía Wichteln, soporte Wichteln">
     <link rel="canonical" href="https://wichtlä.ch/faq.php">
     
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://wichtlä.ch/faq.php">
-    <meta property="og:title" content="FAQ - Häufig gestellte Fragen zum Online Wichteln">
-    <meta property="og:description" content="Alle Antworten zu Wichtlä.ch: Kosten, Datenschutz, Funktionen und mehr.">
+    <meta property="og:title" content="FAQ - Preguntas frecuentes sobre Wichteln en línea">
+    <meta property="og:description" content="Todas las respuestas sobre Wichtlä.ch: costos, privacidad, funciones y más.">
     
     <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
@@ -47,67 +47,67 @@ if (file_exists('config.php')) {
     
     <div class="content-page">
         <div class="breadcrumb">
-            <a href="index.php">Home</a> / FAQ
+            <a href="index.php">Inicio</a> / Preguntas frecuentes
         </div>
         
         <header class="page-header">
-            <h1 class="page-title">Häufig gestellte Fragen ?</h1>
-            <p class="page-subtitle">Alle Antworten zu Wichtlä.ch, Funktionen, Datenschutz und Tipps für erfolgreiches Wichteln</p>
+            <h1 class="page-title">Preguntas frecuentes</h1>
+            <p class="page-subtitle">Todas las respuestas sobre Wichtlä.ch, funciones, privacidad y consejos para un Wichteln exitoso</p>
         </header>
         
         <article>
             <!-- Allgemeine Fragen -->
             <section class="faq-section">
-                <h2>🎁 Allgemeine Fragen</h2>
+                <h2>🎁 Preguntas generales</h2>
                 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span>Was ist Wichtlä.ch?</span>
+                        <span>¿Qué es Wichtlä.ch?</span>
                         <span class="faq-icon">▼</span>
                     </div>
                     <div class="faq-answer">
                         <p>
-                            Wichtlä.ch ist ein <strong>kostenloses Online-Tool</strong> zum Organisieren von Wichtel-Events. Du kannst damit ganz einfach:
+                            Wichtlä.ch es una <strong>herramienta gratuita en línea</strong> para organizar eventos de Wichteln. Con ella puedes, de forma muy sencilla:
                         </p>
                         <ul>
-                            <li>Wichtel-Gruppen erstellen</li>
-                            <li>Teilnehmer hinzufügen</li>
-                            <li>Automatisch und fair Namen ziehen lassen</li>
-                            <li>Lose per E-Mail verschicken</li>
-                            <li>Ausschlüsse definieren (z.B. Paare ziehen sich nicht)</li>
+                            <li>Crear grupos de Wichteln</li>
+                            <li>Añadir participantes</li>
+                            <li>Sortear nombres de forma automática y justa</li>
+                            <li>Enviar los resultados por correo electrónico</li>
+                            <li>Definir exclusiones (p. ej., que las parejas no se toquen entre sí)</li>
                         </ul>
                         <p>
-                            Alles ohne Registrierung, ohne App-Download – einfach im Browser!
+                            Todo sin registro, sin descargar apps: ¡directamente en el navegador!
                         </p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span>Kostet Wichtlä.ch etwas?</span>
+                        <span>¿Wichtlä.ch tiene algún costo?</span>
                         <span class="faq-icon">▼</span>
                     </div>
                     <div class="faq-answer">
                         <p>
-                            <strong>Nein, Wichtlä.ch ist 100% kostenlos!</strong>
+                            <strong>¡No, Wichtlä.ch es 100% gratis!</strong>
                         </p>
                         <p>
-                            Es gibt keine versteckten Kosten, keine Premium-Accounts und keine Einschränkungen. Der Service wird durch kleine Werbeanzeigen finanziert, die dezent platziert sind und nicht stören.
+                            No hay costos ocultos, ni cuentas premium ni limitaciones. El servicio se financia con pequeños anuncios discretos que no molestan.
                         </p>
                     </div>
                 </div>
                 
                 <div class="faq-item">
                     <div class="faq-question" onclick="toggleFaq(this)">
-                        <span>Muss ich mich registrieren?</span>
+                        <span>¿Necesito registrarme?</span>
                         <span class="faq-icon">▼</span>
                     </div>
                     <div class="faq-answer">
                         <p>
-                            <strong>Nein!</strong> Es ist keine Registrierung erforderlich. Du erstellst einfach eine Gruppe, fügst Teilnehmer hinzu und erhältst einen Admin-Link per E-Mail. Fertig!
+                            <strong>¡No!</strong> No se requiere registro. Simplemente creas un grupo, agregas participantes y recibes por correo un enlace de administrador. ¡Listo!
                         </p>
                         <p>
-                            Das macht Wichtlä.ch besonders einfach und schnell in der Nutzung.
+                            Eso hace a Wichtlä.ch especialmente fácil y rápido de usar.
                         </p>
                     </div>
                 </div>

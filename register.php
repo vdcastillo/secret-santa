@@ -12,11 +12,11 @@ $stmt->execute([$invite_token]);
 $group = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$group) {
-    die('Ungültiger Einladungstoken.');
+    die('Token de invitación no válido.');
 }
 
 if ($group['is_drawn']) {
-    die('Die Registrierung ist nicht mehr möglich. Die Auslosung wurde bereits durchgeführt.');
+    die('Ya no es posible registrarse. El sorteo ya se realizó.');
 }
 
 // Teilnehmer registrieren
@@ -25,9 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']) ?: null;
 
     if (empty($name)) {
-        $error = "Name darf nicht leer sein.";
+        $error = "El nombre no puede estar vacío.";
     } elseif ($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Ungültige E-Mail-Adresse.";
+        $error = "Dirección de correo electrónico no válida.";
     } else {
         $participant_token = generate_token();
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $description_display = $group['description'] ?: "Keine Beschreibung.";
             $gift_exchange_date_display = $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt";
             
-            $subject = 'Willkommen beim Wichteln! 🎁';
+            $subject = '¡Bienvenidos a Secret Santa!';
             $html_message = create_registration_email(
                 $name,
                 $group['name'],
@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (!send_email($email, $subject, $html_message, true)) {
                 // Fehlerbehandlung, falls E-Mail nicht gesendet werden konnte
-                error_log("E-Mail konnte nicht an $email gesendet werden.");
-                $email_error = "E-Mail konnte nicht gesendet werden. Bitte überprüfe deine E-Mail-Adresse.";
+                error_log("No se pudo enviar el correo electrónico a {$email}.");
+                $email_error = "No se pudo enviar el correo electrónico. Por favor, revise su dirección de correo electrónico.";
             }
         }
 
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Registrierung für <?php echo htmlspecialchars($group['name']); ?></title>
+    <title>Inscripción para<?php echo htmlspecialchars($group['name']); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </a>
     </header>
     <div class="container">
-        <h1>Registrierung für <?php echo htmlspecialchars($group['name']); ?></h1>
+        <h1>Inscripción para<?php echo htmlspecialchars($group['name']); ?></h1>
         <?php if (isset($error)): ?>
             <div class="notification error">
                 <?php echo htmlspecialchars($error); ?>
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="email">E-Mail (optional):</label>
                 <input type="email" id="email" name="email">
             </div>
-            <button type="submit" class="button primary">Registrieren</button>
+            <button type="submit" class="button primary">Registro</button>
         </form>
     </div>
     <!-- Cookie Banner -->

@@ -1,8 +1,8 @@
 <!-- Cookie Banner -->
 <div id="cookie-banner" class="cookie-banner" style="display: none;">
     <div class="cookie-banner-content">
-        <span class="cookie-banner-text">🍪 Diese Website verwendet Cookies. <a href="datenschutz.php">Mehr erfahren</a></span>
-        <button class="cookie-banner-close" onclick="acceptCookies()" aria-label="Schließen">×</button>
+        <span class="cookie-banner-text">🍪 Este sitio utiliza cookies. <a href="datenschutz.php">Más información</a></span>
+        <button class="cookie-banner-close" onclick="acceptCookies()" aria-label="Cerrar">×</button>
     </div>
 </div>
 

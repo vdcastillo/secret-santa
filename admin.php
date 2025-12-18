@@ -12,7 +12,7 @@ $stmt->execute([$admin_token]);
 $group = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$group) {
-    die('Ungültiger Token.');
+    die('Token no válido.');
 }
 
 // Teilnehmer abrufen
@@ -33,7 +33,7 @@ if (isset($_POST['reset_draw'])) {
         $stmt->execute([$group['id']]);
         
         $pdo->commit();
-        $reset_success = "Auslosung erfolgreich zurückgesetzt. Du kannst nun erneut auslosen.";
+        $reset_success = "Sorteo reiniciado correctamente. Ahora puedes volver a sortear.";
         
         // Gruppe neu abrufen
         $stmt = $pdo->prepare("SELECT * FROM `groups` WHERE `admin_token` = ?");
@@ -42,7 +42,7 @@ if (isset($_POST['reset_draw'])) {
         
     } catch (Exception $e) {
         $pdo->rollBack();
-        $reset_error = "Fehler beim Zurücksetzen der Auslosung: " . $e->getMessage();
+        $reset_error = "Error al reiniciar el sorteo: " . $e->getMessage();
     }
 }
 
@@ -70,13 +70,13 @@ if (isset($_POST['delete_group'])) {
         
         $pdo->commit();
         
-        // Weiterleitung zur Hauptseite mit Erfolgsmeldung
+        // Redirección a la página principal con mensaje de éxito
         header("Location: index.php?deleted=1");
         exit();
         
     } catch (Exception $e) {
         $pdo->rollBack();
-        $delete_error = "Fehler beim Löschen der Gruppe: " . $e->getMessage();
+        $delete_error = "Error al eliminar el grupo: " . $e->getMessage();
     }
 }
 
@@ -85,25 +85,25 @@ if (isset($_POST['update_participant_email'])) {
     $participant_id = intval($_POST['participant_id']);
     $new_email = trim($_POST['participant_email']);
     
-    // Validierung
+    // Validación
     if (!empty($new_email) && !filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
-        $participant_error = "Ungültige E-Mail-Adresse.";
+        $participant_error = "Dirección de correo no válida.";
     } else {
-        // Prüfe ob Teilnehmer zur Gruppe gehört
+        // Verificar si el participante pertenece al grupo
         $stmt = $pdo->prepare("SELECT id FROM `participants` WHERE `id` = ? AND `group_id` = ?");
         $stmt->execute([$participant_id, $group['id']]);
         
         if ($stmt->fetch()) {
             $stmt = $pdo->prepare("UPDATE `participants` SET `email` = ? WHERE `id` = ?");
             $stmt->execute([$new_email ?: null, $participant_id]);
-            $participant_success = "E-Mail-Adresse erfolgreich aktualisiert.";
+            $participant_success = "Correo actualizado correctamente.";
             
-            // Teilnehmer neu laden
+            // Recargar participantes
             $stmt = $pdo->prepare("SELECT * FROM `participants` WHERE `group_id` = ?");
             $stmt->execute([$group['id']]);
             $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            $participant_error = "Teilnehmer nicht gefunden.";
+            $participant_error = "Participante no encontrado.";
         }
     }
 }
@@ -325,7 +325,7 @@ if (isset($_POST['draw'])) {
                             $gift_exchange_date = $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt";
 
                             // Erstelle HTML-E-Mail
-                            $subject = 'Dein Wichtelpartner 🎁';
+                            $subject = 'Tu Santa secreto 🎁';
                             $html_message = create_html_email(
                                 $participant['name'],
                                 $assigned['name'],
@@ -335,9 +335,10 @@ if (isset($_POST['draw'])) {
                                 $gift_exchange_date
                             );
 
-                            if (!send_email($participant['email'], $subject, $html_message, true)) {
+                            $response = send_email($participant['email'], $subject, $html_message, true);
+                            if (!$response['sucess']) {
                                 // Fehlerbehandlung, falls E-Mail nicht gesendet werden konnte
-                                error_log("E-Mail konnte nicht an {$participant['email']} gesendet werden.");
+                                error_log("E-Mail konnte nicht an {$participant['email']} gesendet werden. {$response['response']}");
                             }
                         } else {
                             // Fehlerprotokollierung, wenn der zugewiesene Teilnehmer nicht gefunden wird
@@ -358,10 +359,10 @@ if (isset($_POST['draw'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Bereich - <?php echo htmlspecialchars($group['name']); ?></title>
+    <title>Área de administración - <?php echo htmlspecialchars($group['name']); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
@@ -385,22 +386,22 @@ if (isset($_POST['draw'])) {
     <!-- CSS Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
     
-    <!-- JavaScript für Kopieren-Button -->
+    <!-- JavaScript para botón de copiar -->
     <script>
         function copyToClipboard(elementId) {
             var element = document.getElementById(elementId);
             var copyText = element.getAttribute('data-url') || element.innerText || element.textContent;
             
-            // Moderne Clipboard API (bevorzugt)
+            // API moderna del portapapeles (preferida)
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(copyText).then(function() {
-                    alert("Link kopiert: " + copyText);
+                    alert("¡Enlace copiado!: " + copyText);
                 }).catch(function(err) {
-                    // Fallback bei Fehler
+                    // Alternativa en caso de error
                     fallbackCopy(copyText);
                 });
             } else {
-                // Fallback für ältere Browser
+                // Alternativa para navegadores antiguos
                 fallbackCopy(copyText);
             }
         }
@@ -412,12 +413,12 @@ if (isset($_POST['draw'])) {
             tempInput.style.opacity = "0";
             document.body.appendChild(tempInput);
             tempInput.select();
-            tempInput.setSelectionRange(0, 99999); // Für mobile Geräte
+            tempInput.setSelectionRange(0, 99999); // Para dispositivos móviles
             try {
                 document.execCommand("copy");
-                alert("Link kopiert: " + text);
+                alert("¡Enlace copiado!: " + text);
             } catch (err) {
-                alert("Fehler beim Kopieren. Bitte manuell kopieren.");
+                alert("Error al copiar. Copia manualmente, por favor.");
             }
             document.body.removeChild(tempInput);
         }
@@ -442,10 +443,10 @@ if (isset($_POST['draw'])) {
 </head>
 <body>
     <header>
-        <img src="images/logo.png" alt="Wichtel Logo">
+        <img src="images/logo.png" alt="Logo de Wichteln">
     </header>
     <div class="container">
-        <h1>Admin Bereich - <?php echo htmlspecialchars($group['name']); ?></h1>
+        <h1>Área de administración - <?php echo htmlspecialchars($group['name']); ?></h1>
         
         <?php if (isset($update_error)): ?>
             <div class="notification error">
@@ -519,38 +520,38 @@ if (isset($_POST['draw'])) {
             </div>
         <?php endif; ?>
 
-        <!-- Gruppendetails bearbeiten -->
-        <h2>Gruppendetails</h2>
+        <!-- Editar detalles del grupo -->
+        <h2>Detalles del grupo</h2>
         <form method="POST">
             <div class="form-group">
-                <label for="budget">Budget (optional):</label>
-                <input type="number" step="0.01" id="budget" name="budget" value="<?php echo htmlspecialchars($group['budget'] ?? ''); ?>" placeholder="z.B. 20.00">
+                <label for="budget">Presupuesto (opcional):</label>
+                <input type="number" step="0.01" id="budget" name="budget" value="<?php echo htmlspecialchars($group['budget'] ?? ''); ?>" placeholder="p. ej., 20.00">
             </div>
             <div class="form-group">
-                <label for="description">Beschreibung (optional):</label>
+                <label for="description">Descripción (opcional):</label>
                 <textarea id="description" name="description" rows="4"><?php echo htmlspecialchars($group['description'] ?? ''); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="gift_exchange_date">Datum der Geschenkübergabe (optional):</label>
+                <label for="gift_exchange_date">Fecha del intercambio de regalos (opcional):</label>
                 <input type="date" id="gift_exchange_date" name="gift_exchange_date" value="<?php echo htmlspecialchars($group['gift_exchange_date'] ?? ''); ?>">
             </div>
-            <button type="submit" name="update_group" class="button secondary">Gruppendetails aktualisieren</button>
+            <button type="submit" name="update_group" class="button secondary">Actualizar detalles del grupo</button>
         </form>
         
         <hr>
         
-        <!-- Einladungslink für Teilnehmer -->
-        <h2>Einladungslink für Teilnehmer</h2>
+        <!-- Enlace de invitación para participantes -->
+        <h2>Enlace de invitación para participantes</h2>
         <pre id="participant-link"><?php echo htmlspecialchars(get_display_url('/register.php?token=' . urlencode($group['invite_token']))); ?></pre>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
-            <button class="button secondary small copy-button" onclick="copyToClipboard('participant-link')">Link kopieren</button>
-            <a href="https://api.whatsapp.com/send?text=<?php echo urlencode('Hallo! Du bist eingeladen, beim Wichteln mitzumachen. 🎁') . '%0A%0A' . urlencode('Gruppe: ' . $group['name']) . '%0A%0A' . urlencode('Melde dich hier an: ' . get_display_url('/register.php?token=' . urlencode($group['invite_token']))); ?>" 
+            <button class="button secondary small copy-button" onclick="copyToClipboard('participant-link')">Copiar enlace</button>
+            <a href="https://api.whatsapp.com/send?text=<?php echo urlencode('¡Hola! Estás invitado a participar en nuestro Wichteln. 🎁') . '%0A%0A' . urlencode('Grupo: ' . $group['name']) . '%0A%0A' . urlencode('Regístrate aquí: ' . get_display_url('/register.php?token=' . urlencode($group['invite_token']))); ?>" 
                target="_blank" 
                class="button secondary small">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.25rem;">
                     <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" fill="#25D366"/>
                 </svg>
-                Via WhatsApp teilen
+                Compartir por WhatsApp
             </a>
         </div>
         
@@ -562,16 +563,16 @@ if (isset($_POST['draw'])) {
             </div>
         </div>
         
-        <!-- Admin-Link anzeigen -->
-        <h2>Admin-Link</h2>
-        <p>Dieser Link ermöglicht den direkten Zugriff auf den Admin-Bereich:</p>
+        <!-- Mostrar enlace de administrador -->
+        <h2>Enlace de administrador</h2>
+        <p>Este enlace permite el acceso directo al área de administración:</p>
         <pre id="admin-link"><?php echo htmlspecialchars(get_display_url('/admin.php?token=' . urlencode($admin_token))); ?></pre>
-        <button class="button secondary small copy-button" onclick="copyToClipboard('admin-link')">Link kopieren</button>
+        <button class="button secondary small copy-button" onclick="copyToClipboard('admin-link')">Copiar enlace</button>
         
         <hr>
         
-        <!-- Teilnehmerliste anzeigen -->
-        <h2>Teilnehmer (<?php echo count($participants); ?>)</h2>
+        <!-- Mostrar lista de participantes -->
+        <h2>Participantes (<?php echo count($participants); ?>)</h2>
         <?php if ($participants): ?>
             <div class="participants-grid">
                 <?php foreach ($participants as $p): ?>
@@ -583,7 +584,7 @@ if (isset($_POST['draw'])) {
                                     <?php if (!empty($p['email'])): ?>
                                         <span class="email-display">✉️ <?php echo htmlspecialchars($p['email']); ?></span>
                                     <?php else: ?>
-                                        <span class="email-missing">⚠️ Keine E-Mail</span>
+                                        <span class="email-missing">⚠️ Sin correo</span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -594,9 +595,9 @@ if (isset($_POST['draw'])) {
                                 <button type="button"
                                         class="action-btn copy-btn" 
                                         onclick="copyToClipboard('participant-link-<?php echo $p['id']; ?>')"
-                                        title="Teilnehmer-Link kopieren">
+                                        title="Copiar enlace del participante">
                                     <span class="btn-icon">📋</span>
-                                    <span class="btn-text">Link kopieren</span>
+                                    <span class="btn-text">Copiar enlace</span>
                                 </button>
                                 <span id="participant-link-<?php echo $p['id']; ?>" 
                                       data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($p['participant_token']))); ?>"
@@ -611,20 +612,20 @@ if (isset($_POST['draw'])) {
                                 <button type="submit" 
                                         name="resend_email" 
                                         class="action-btn email-btn <?php echo !$can_send_email ? 'disabled' : ''; ?>"
-                                        title="<?php echo $can_send_email ? 'E-Mail erneut senden' : 'E-Mail kann nicht gesendet werden (keine E-Mail-Adresse oder Auslosung nicht durchgeführt)'; ?>"
+                                        title="<?php echo $can_send_email ? 'Reenviar correo' : 'No se puede enviar el correo (no hay dirección o el sorteo no se ha realizado)'; ?>"
                                         <?php echo !$can_send_email ? 'disabled' : ''; ?>
-                                        <?php echo $can_send_email ? 'onclick="return confirm(\'E-Mail mit Wichtelpartner-Info an ' . htmlspecialchars($p['name']) . ' senden?\');"' : ''; ?>>
+                                        <?php echo $can_send_email ? 'onclick="return confirm(\'¿Enviar correo con la persona asignada a ' . htmlspecialchars($p['name']) . '?\');"' : ''; ?>>
                                     <span class="btn-icon">📧</span>
-                                    <span class="btn-text">E-Mail senden</span>
+                                    <span class="btn-text">Enviar correo</span>
                                 </button>
                             </form>
                             
                             <?php if (!$group['is_drawn']): ?>
                                 <a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete=<?php echo urlencode($p['id']); ?>" 
                                    class="action-btn delete-btn"
-                                   onclick="return confirm('Möchtest du <?php echo htmlspecialchars($p['name']); ?> wirklich löschen?');">
+                                   onclick="return confirm('¿Seguro que quieres eliminar a <?php echo htmlspecialchars($p['name']); ?>?');">
                                     <span class="btn-icon">🗑️</span>
-                                    <span class="btn-text">Löschen</span>
+                                    <span class="btn-text">Eliminar</span>
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -636,13 +637,13 @@ if (isset($_POST['draw'])) {
                                     <input type="email" 
                                            name="participant_email" 
                                            value="<?php echo htmlspecialchars($p['email'] ?? ''); ?>" 
-                                           placeholder="E-Mail hinzufügen..."
+                                           placeholder="Añadir correo..."
                                            class="email-edit-input">
                                     <button type="submit" 
                                             name="update_participant_email" 
                                             class="email-edit-btn"
-                                            title="E-Mail speichern">
-                                        💾 Speichern
+                                            title="Guardar correo">
+                                        💾 Guardar
                                     </button>
                                 </div>
                             </form>
@@ -653,24 +654,24 @@ if (isset($_POST['draw'])) {
         <?php else: ?>
             <div class="empty-state">
                 <div class="empty-icon">👥</div>
-                <p class="empty-text">Noch keine Teilnehmer registriert.</p>
-                <p class="empty-hint">Teile den Einladungslink oben, damit sich Teilnehmer anmelden können.</p>
+                <p class="empty-text">Aún no hay participantes registrados.</p>
+                <p class="empty-hint">Comparte el enlace de invitación de arriba para que los participantes se registren.</p>
             </div>
         <?php endif; ?>
 
-        <!-- Ausschlüsse verwalten -->
+        <!-- Gestionar exclusiones -->
         <?php if (!$group['is_drawn'] && count($participants) >= 2): ?>
             <hr>
             
-            <h2>Ausschlüsse verwalten</h2>
-            <p>Lege fest, wer wem nicht wichteln kann. Dies ist nützlich, wenn z.B. Paare sich gegenseitig nicht beschenken sollen.</p>
+            <h2>Gestionar exclusiones</h2>
+            <p>Define quién no debería tocarle a quién. Útil, por ejemplo, si las parejas no deben regalarse entre sí.</p>
             
             <form method="POST" class="exclusion-form">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="participant_id">Person:</label>
+                        <label for="participant_id">Persona:</label>
                         <select id="participant_id" name="participant_id" required>
-                            <option value="">-- Person auswählen --</option>
+                            <option value="">-- Selecciona una persona --</option>
                             <?php foreach ($participants as $p): ?>
                                 <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
                             <?php endforeach; ?>
@@ -678,9 +679,9 @@ if (isset($_POST['draw'])) {
                     </div>
                     
                     <div class="form-group">
-                        <label for="excluded_participant_id">kann nicht wichteln:</label>
+                        <label for="excluded_participant_id">no puede tocarle a:</label>
                         <select id="excluded_participant_id" name="excluded_participant_id" required>
-                            <option value="">-- Person auswählen --</option>
+                            <option value="">-- Selecciona una persona --</option>
                             <?php foreach ($participants as $p): ?>
                                 <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
                             <?php endforeach; ?>
@@ -688,20 +689,20 @@ if (isset($_POST['draw'])) {
                     </div>
                     
                     <div class="form-group">
-                        <label style="opacity: 0;">Hinzufügen</label>
-                        <button type="submit" name="add_exclusion" class="button secondary">Ausschluss hinzufügen</button>
+                        <label style="opacity: 0;">Añadir</label>
+                        <button type="submit" name="add_exclusion" class="button secondary">Añadir exclusión</button>
                     </div>
                 </div>
             </form>
             
             <?php if ($exclusions): ?>
-                <h3>Aktive Ausschlüsse</h3>
+                <h3>Exclusiones activas</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Person</th>
-                            <th>kann nicht wichteln</th>
-                            <th>Aktion</th>
+                            <th>Persona</th>
+                            <th>no puede tocarle a</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -712,8 +713,8 @@ if (isset($_POST['draw'])) {
                                 <td>
                                     <a href="admin.php?token=<?php echo urlencode($admin_token); ?>&delete_exclusion=<?php echo urlencode($ex['id']); ?>" 
                                        class="button error small"
-                                       onclick="return confirm('Möchtest du diesen Ausschluss wirklich löschen?');">
-                                        Löschen
+                                       onclick="return confirm('¿Seguro que quieres eliminar esta exclusión?');">
+                                        Eliminar
                                     </a>
                                 </td>
                             </tr>
@@ -721,39 +722,39 @@ if (isset($_POST['draw'])) {
                     </tbody>
                 </table>
             <?php else: ?>
-                <p class="text-muted">Keine Ausschlüsse definiert.</p>
+                <p class="text-muted">No hay exclusiones definidas.</p>
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Auslosung durchführen -->
+        <!-- Realizar sorteo -->
         <?php if (!$group['is_drawn']): ?>
             <hr>
-            <h2>Auslosung durchführen</h2>
-            <p>Wenn alle Teilnehmer registriert sind und alle Ausschlüsse definiert wurden, kannst du die Auslosung durchführen.</p>
+            <h2>Realizar sorteo</h2>
+            <p>Cuando todos los participantes estén registrados y las exclusiones definidas, puedes realizar el sorteo.</p>
             <form method="POST" style="margin-top: 1rem;">
-                <button type="submit" name="draw" class="button primary">Jetzt auslosen</button>
+                <button type="submit" name="draw" class="button primary">Sortear ahora</button>
             </form>
         <?php else: ?>
             <hr>
-            <h2>Auslosung</h2>
+            <h2>Sorteo</h2>
             <div class="notification success">
-                ✓ Die Auslosung wurde bereits durchgeführt. Alle Teilnehmer mit E-Mail-Adresse wurden benachrichtigt.
+                ✓ El sorteo ya se realizó. Todos los participantes con correo han sido notificados.
             </div>
             
-            <h3>Auslosung zurücksetzen</h3>
-            <p class="text-muted">Du kannst die Auslosung zurücksetzen, um sie erneut durchzuführen. Dies löscht alle aktuellen Zuordnungen, und du kannst danach neue Teilnehmer hinzufügen oder Ausschlüsse ändern.</p>
-            <form method="POST" style="margin-top: 1rem;" onsubmit="return confirm('Möchtest du die Auslosung wirklich zurücksetzen? Alle aktuellen Zuordnungen werden gelöscht.');">
-                <button type="submit" name="reset_draw" class="button error">Auslosung zurücksetzen</button>
+            <h3>Reiniciar sorteo</h3>
+            <p class="text-muted">Puedes reiniciar el sorteo para realizarlo de nuevo. Esto elimina todas las asignaciones actuales y podrás añadir nuevos participantes o cambiar exclusiones.</p>
+            <form method="POST" style="margin-top: 1rem;" onsubmit="return confirm('¿Seguro que quieres reiniciar el sorteo? Se borrarán todas las asignaciones actuales.');">
+                <button type="submit" name="reset_draw" class="button error">Reiniciar sorteo</button>
             </form>
         <?php endif; ?>
         
-        <!-- Gruppe löschen -->
+        <!-- Eliminar grupo -->
         <hr>
-        <h2 style="color: var(--error);">⚠️ Gefahrenzone</h2>
-        <p class="text-muted">Das Löschen der Gruppe kann nicht rückgängig gemacht werden. Alle Teilnehmer, Ausschlüsse und die Auslosung werden permanent gelöscht.</p>
-        <form method="POST" style="margin-top: 1rem;" onsubmit="return confirm('⚠️ ACHTUNG: Möchtest du die Gruppe \"<?php echo htmlspecialchars($group['name']); ?>\" wirklich PERMANENT löschen?\n\nAlle Teilnehmer, Ausschlüsse und die Auslosung werden unwiderruflich gelöscht!\n\nDiese Aktion kann NICHT rückgängig gemacht werden.');">
+        <h2 style="color: var(--error);">⚠️ Zona de peligro</h2>
+        <p class="text-muted">Eliminar el grupo no se puede deshacer. Todos los participantes, exclusiones y el sorteo se eliminarán permanentemente.</p>
+        <form method="POST" style="margin-top: 1rem;" onsubmit="return confirm('⚠️ ATENCIÓN: ¿Seguro que quieres eliminar PERMANENTEMENTE el grupo \"<?php echo htmlspecialchars($group['name']); ?>\"?\n\n¡Todos los participantes, exclusiones y el sorteo se borrarán de forma irreversible!\n\nEsta acción NO se puede deshacer.');">
             <button type="submit" name="delete_group" class="button error" style="background: linear-gradient(135deg, #dc3545, #c82333);">
-                🗑️ Gruppe permanent löschen
+                🗑️ Eliminar grupo permanentemente
             </button>
         </form>
     </div>

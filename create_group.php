@@ -16,17 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Validierung (optional)
     if (empty($group_name)) {
-        $error = "Gruppenname darf nicht leer sein.";
+        $error = "El nombre del grupo no puede estar vacío.";
     } elseif (empty($admin_email)) {
-        $error = "Admin-E-Mail darf nicht leer sein.";
+        $error = "El correo del administrador no puede estar vacío.";
     } elseif (!filter_var($admin_email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Ungültige E-Mail-Adresse.";
+        $error = "Dirección de correo no válida.";
     } elseif ($budget !== null && !is_numeric($budget)) {
-        $error = "Budget muss eine Zahl sein.";
+        $error = "El presupuesto debe ser un número.";
     } elseif ($gift_exchange_date !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $gift_exchange_date)) {
-        $error = "Datum der Geschenkübergabe muss im Format YYYY-MM-DD sein.";
+        $error = "La fecha del intercambio debe tener el formato YYYY-MM-DD.";
     } elseif (empty($captcha_answer) || $captcha_answer !== $_SESSION['captcha_code']) {
-        $error = "Der Sicherheitscode ist falsch. Bitte versuche es erneut.";
+        $error = "El código de seguridad es incorrecto. Inténtalo de nuevo.";
     } else {
         $pdo = db_connect();
 
@@ -43,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $invite_link = get_display_url('/register.php?token=' . urlencode($invite_token));
         
         // Formatiere Gruppendetails für E-Mail
-        $group_budget = $budget !== null ? number_format($budget, 2) . " CHF" : "Nicht festgelegt";
-        $group_description = $description ?: "Keine Beschreibung";
-        $gift_exchange_date_formatted = $gift_exchange_date ? date('d.m.Y', strtotime($gift_exchange_date)) : "Nicht festgelegt";
+        $group_budget = $budget !== null ? number_format($budget, 2) . " CHF" : "No especificado";
+        $group_description = $description ?: "Sin descripción";
+        $gift_exchange_date_formatted = $gift_exchange_date ? date('d.m.Y', strtotime($gift_exchange_date)) : "No especificada";
         
         // Sende Admin-E-Mail
-        $subject = 'Deine Wichtelgruppe "' . $group_name . '" wurde erstellt! 🎁';
+        $subject = '¡Tu grupo de Wichteln "' . $group_name . '" ha sido creado! 🎁';
         $html_message = create_admin_email(
             $group_name,
             $admin_link,
@@ -71,10 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Wichtel Gruppe erstellen</title>
+    <title>Crear grupo de Wichteln</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
@@ -119,12 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php include 'includes/navigation.php'; ?>
     
     <header>
-        <a href="index.php" title="Zur Startseite">
-            <img src="images/logo.png" alt="Wichtel Logo">
+        <a href="index.php" title="Ir al inicio">
+            <img src="images/logo.png" alt="Logo de Wichteln">
         </a>
     </header>
     <div class="container">
-        <h1>Wichtel Gruppe erstellen</h1>
+        <h1>Crear grupo de Wichteln</h1>
         <?php if (isset($error)): ?>
             <div class="notification error">
                 <?php echo htmlspecialchars($error); ?>
@@ -132,40 +132,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
         <form method="POST">
             <div class="form-group">
-                <label for="group_name">Gruppenname:</label>
+                <label for="group_name">Nombre del grupo:</label>
                 <input type="text" id="group_name" name="group_name" required>
             </div>
             <div class="form-group">
-                <label for="admin_email">Deine E-Mail-Adresse (Admin):</label>
-                <input type="email" id="admin_email" name="admin_email" required placeholder="admin@beispiel.ch">
-                <small style="color: #5f6368; font-size: 13px; display: block; margin-top: 5px;">Du erhältst den Admin-Link per E-Mail</small>
+                <label for="admin_email">Tu correo electrónico (administrador):</label>
+                <input type="email" id="admin_email" name="admin_email" required placeholder="admin@ejemplo.com">
+                <small style="color: #5f6368; font-size: 13px; display: block; margin-top: 5px;">Recibirás el enlace de administrador por correo</small>
             </div>
             <div class="form-group">
-                <label for="budget">Budget (optional):</label>
-                <input type="number" step="0.01" id="budget" name="budget" placeholder="z.B. 20.00">
+                <label for="budget">Presupuesto (opcional):</label>
+                <input type="number" step="0.01" id="budget" name="budget" placeholder="p. ej., 20.00">
             </div>
             <div class="form-group">
-                <label for="description">Beschreibung (optional):</label>
-                <textarea id="description" name="description" rows="4" placeholder="Optionaler Text"></textarea>
+                <label for="description">Descripción (opcional):</label>
+                <textarea id="description" name="description" rows="4" placeholder="Texto opcional"></textarea>
             </div>
             <div class="form-group">
-                <label for="gift_exchange_date">Datum der Geschenkübergabe (optional):</label>
+                <label for="gift_exchange_date">Fecha del intercambio de regalos (opcional):</label>
                 <input type="date" id="gift_exchange_date" name="gift_exchange_date">
             </div>
             <div class="form-group captcha-group">
-                <label for="captcha_answer">Sicherheitscode:</label>
+                <label for="captcha_answer">Código de seguridad:</label>
                 <div class="captcha-container">
                     <img src="captcha.php" alt="Captcha" id="captcha-image" class="captcha-image">
-                    <button type="button" onclick="refreshCaptcha()" class="button secondary small refresh-captcha" title="Neues Bild laden">
+                    <button type="button" onclick="refreshCaptcha()" class="button secondary small refresh-captcha" title="Cargar nueva imagen">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                         </svg>
                     </button>
                 </div>
-                <input type="text" id="captcha_answer" name="captcha_answer" required placeholder="Gib die Zahlen aus dem Bild ein" maxlength="5" autocomplete="off">
-                <small class="captcha-hint">Bitte gib die 5 Zahlen aus dem Bild ein.</small>
+                <input type="text" id="captcha_answer" name="captcha_answer" required placeholder="Introduce los números de la imagen" maxlength="5" autocomplete="off">
+                <small class="captcha-hint">Por favor, introduce los 5 números de la imagen.</small>
             </div>
-            <button type="submit" class="button primary">Gruppe erstellen</button>
+            <button type="submit" class="button primary">Crear grupo</button>
         </form>
     </div>
     

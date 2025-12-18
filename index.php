@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Wichtlä.ch - Online Wichteln leicht gemacht</title>
+    <title>Wichtlä.ch - Wichteln en línea, así de fácil</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Organisiere dein Wichteln online - einfach, schnell und kostenlos. Erstelle Gruppen, ziehe Namen und verschicke die Lose per E-Mail.">
+    <meta name="description" content="Organiza tu Wichteln en línea: fácil, rápido y gratis. Crea grupos, sortea nombres y envía los resultados por correo electrónico.">
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/images/favicon/apple-icon-72x72.png">
@@ -49,7 +49,7 @@
     
     <?php if (isset($_GET['deleted']) && $_GET['deleted'] == '1'): ?>
         <div class="notification success" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; max-width: 500px; width: 90%;">
-            Die Gruppe wurde erfolgreich gelöscht.
+            El grupo se eliminó correctamente.
         </div>
         <script>
             setTimeout(function() {
@@ -74,38 +74,38 @@
         </div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-badge">✨ Kostenlos & Einfach</div>
+                <div class="hero-badge">✨ Gratis y fácil</div>
                 <h1 class="hero-title">
-                    <span class="hero-title-main">Wichteln leicht gemacht</span>
-                    <span class="hero-title-sub">Organisiere dein Wichteln online</span>
+                    <span class="hero-title-main">Wichteln, así de fácil</span>
+                    <span class="hero-title-sub">Organiza tu Wichteln en línea</span>
                 </h1>
-                <p class="hero-subtitle">Die einfachste Art, dein Wichteln zu organisieren. Keine Registrierung, keine versteckten Kosten – einfach starten!</p>
+                <p class="hero-subtitle">La forma más sencilla de organizar tu Wichteln. Sin registro, sin costos ocultos: ¡empieza ya!</p>
                 
                 <div class="hero-features">
                     <div class="hero-feature">
                         <span class="feature-icon-small">📧</span>
-                        <span>Namen ziehen per E-Mail</span>
+                        <span>Sorteo de nombres por correo</span>
                     </div>
                     <div class="hero-feature">
                         <span class="feature-icon-small">⚖️</span>
-                        <span>Auschlüsse möglich</span>
+                        <span>Exclusiones posibles</span>
                     </div>
                     <div class="hero-feature">
                         <span class="feature-icon-small">💰</span>
-                        <span>100% kostenlos</span>
+                        <span>100% gratis</span>
                     </div>
                 </div>
                 
                 <div class="hero-cta">
                     <a href="create_group.php" class="cta-button cta-button-primary">
-                        <span>Jetzt Gruppe erstellen</span>
+                        <span>Crear grupo ahora</span>
                         <span class="cta-arrow">→</span>
                     </a>
                     <a href="participant.php" class="cta-button cta-button-secondary">
-                        <span>Zum Teilnehmerbereich</span>
+                        <span>Ir al área de participantes</span>
                         <span class="cta-arrow">→</span>
                     </a>
-                    <p class="cta-subtext">Keine Registrierung erforderlich • Sofort loslegen</p>
+                    <p class="cta-subtext">No requiere registro • Empieza al instante</p>
                 </div>
             </div>
         </div>
@@ -114,35 +114,35 @@
     <!-- How It Works Section -->
     <section class="how-it-works">
         <div class="container">
-            <h2 class="section-title">So funktioniert's</h2>
+            <h2 class="section-title">Cómo funciona</h2>
             
             <div class="steps">
                 <div class="step">
                     <span class="step-number">1</span>
                     <span class="step-icon">📝</span>
-                    <h3>Gruppe erstellen</h3>
-                    <p>Erstelle eine Wichtel-Gruppe mit Namen, Budget und Datum der Geschenkübergabe. Erhalte sofort einen Admin-Link zur Verwaltung.</p>
+                    <h3>Crear grupo</h3>
+                    <p>Crea un grupo de Wichteln con nombre, presupuesto y fecha de intercambio. Obtén al instante un enlace de administrador para gestionarlo.</p>
                 </div>
                 
                 <div class="step">
                     <span class="step-number">2</span>
                     <span class="step-icon">👥</span>
-                    <h3>Teilnehmer einladen</h3>
-                    <p>Teile den Einladungslink mit allen Teilnehmern. Jeder trägt sich selbst ein - ganz einfach mit Name und optional E-Mail.</p>
+                    <h3>Invitar participantes</h3>
+                    <p>Comparte el enlace de invitación con todos los participantes. Cada quien se registra por su cuenta con su nombre y, opcionalmente, su correo.</p>
                 </div>
                 
                 <div class="step">
                     <span class="step-number">3</span>
                     <span class="step-icon">🎯</span>
-                    <h3>Ausschlüsse festlegen</h3>
-                    <p>Lege fest, wer wem nicht wichteln soll - perfekt für Paare oder Geschwister, die sich nicht gegenseitig beschenken möchten.</p>
+                    <h3>Definir exclusiones</h3>
+                    <p>Indica quién no debe tocarle a quién; perfecto para parejas o hermanos que no quieren regalarse entre sí.</p>
                 </div>
                 
                 <div class="step">
                     <span class="step-number">4</span>
                     <span class="step-icon">🎲</span>
-                    <h3>Auslosen</h3>
-                    <p>Mit einem Klick werden die Namen ausgelost. Jeder Teilnehmer erhält automatisch eine E-Mail mit seinem Wichtelpartner.</p>
+                    <h3>Sorteo</h3>
+                    <p>Con un clic se sortean los nombres. Cada participante recibe automáticamente un correo con su persona asignada.</p>
                 </div>
             </div>
         </div>
@@ -151,37 +151,37 @@
     <!-- Features Section -->
     <section class="features">
         <div class="container">
-            <h2 class="section-title">Warum Wichtlä.ch?</h2>
+            <h2 class="section-title">¿Por qué Wichtlä.ch?</h2>
             
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3><span class="feature-icon">🔒</span> Sicher & Privat</h3>
-                    <p>Deine Daten bleiben sicher. Niemand außer dir kennt alle Zuordnungen. Jeder Teilnehmer sieht nur seinen eigenen Wichtelpartner.</p>
+                    <h3><span class="feature-icon">🔒</span> Seguro y privado</h3>
+                    <p>Tus datos están protegidos. Nadie más que tú conoce todas las asignaciones. Cada participante solo ve a su propia persona asignada.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <h3><span class="feature-icon">⚡</span> Blitzschnell</h3>
-                    <p>In weniger als 2 Minuten ist deine Wichtel-Gruppe erstellt und die ersten Einladungen verschickt. Keine Registrierung notwendig!</p>
+                    <h3><span class="feature-icon">⚡</span> Rapidísimo</h3>
+                    <p>En menos de 2 minutos tu grupo de Wichteln está creado y las primeras invitaciones enviadas. ¡No necesitas registrarte!</p>
                 </div>
                 
                 <div class="feature-card">
-                    <h3><span class="feature-icon">🎨</span> Modern & Schön</h3>
-                    <p>Moderne, ansprechende Oberfläche, die auf allen Geräten perfekt funktioniert - vom Smartphone bis zum Desktop.</p>
+                    <h3><span class="feature-icon">🎨</span> Moderno y bonito</h3>
+                    <p>Una interfaz moderna y atractiva que funciona perfecto en todos los dispositivos, del móvil al escritorio.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <h3><span class="feature-icon">💝</span> Ausschlüsse</h3>
-                    <p>Lege fest, wer wem nicht wichteln kann. Ideal für Paare, Geschwister oder Mitbewohner, die sich nicht gegenseitig ziehen sollen.</p>
+                    <h3><span class="feature-icon">💝</span> Exclusiones</h3>
+                    <p>Define quién no puede tocarle a quién. Ideal para parejas, hermanos o compañeros de piso que no deberían coincidir.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <h3><span class="feature-icon">📧</span> E-Mail Benachrichtigung</h3>
-                    <p>Alle Teilnehmer erhalten automatisch eine E-Mail mit ihrem gezogenen Namen - inklusive aller wichtigen Gruppendetails.</p>
+                    <h3><span class="feature-icon">📧</span> Notificación por correo</h3>
+                    <p>Todos los participantes reciben automáticamente un correo con su nombre asignado, incluyendo los detalles importantes del grupo.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <h3><span class="feature-icon">💰</span> Komplett Kostenlos</h3>
-                    <p>Keine versteckten Kosten, keine Premium-Features. Einfach kostenlos und ohne Einschränkungen nutzen.</p>
+                    <h3><span class="feature-icon">💰</span> Completamente gratis</h3>
+                    <p>Sin costos ocultos, sin funciones premium. Úsalo gratis y sin limitaciones.</p>
                 </div>
             </div>
         </div>
@@ -190,66 +190,66 @@
     <!-- FAQ Section -->
     <section class="faq">
         <div class="container">
-            <h2 class="section-title">Häufig gestellte Fragen</h2>
+            <h2 class="section-title">Preguntas frecuentes</h2>
             
             <div class="faq-list">
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Wie funktioniert die Auslosung?</h3>
+                        <h3>¿Cómo funciona el sorteo?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Nach dem Klick auf "Auslosen" werden die Namen automatisch und zufällig zugeordnet. Dabei wird sichergestellt, dass niemand sich selbst zieht und alle Ausschlüsse berücksichtigt werden. Jeder Teilnehmer erhält dann eine E-Mail mit seinem Wichtelpartner.</p>
+                        <p>Al hacer clic en "Sortear", los nombres se asignan de forma automática y aleatoria. Nos aseguramos de que nadie se toque a sí mismo y de respetar todas las exclusiones. Después, cada participante recibe un correo con su persona asignada.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Kann ich Ausschlüsse einstellen?</h3>
+                        <h3>¿Puedo configurar exclusiones?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Ja! Als Admin kannst du vor der Auslosung festlegen, welche Personen sich nicht gegenseitig ziehen sollen. Dies ist besonders praktisch für Paare oder Geschwister. Du kannst beliebig viele Ausschlüsse definieren.</p>
+                        <p>¡Sí! Como administrador puedes definir antes del sorteo qué personas no deberían tocarse entre sí. Es especialmente útil para parejas o hermanos. Puedes crear tantas exclusiones como necesites.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Was passiert nach der Auslosung?</h3>
+                        <h3>¿Qué pasa después del sorteo?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Alle Teilnehmer mit E-Mail-Adresse erhalten automatisch eine Nachricht mit dem Namen ihres Wichtelpartners. Außerdem können sie jederzeit über ihren persönlichen Link nachschauen, wen sie beschenken.</p>
+                        <p>Todos los participantes que hayan indicado correo reciben automáticamente un mensaje con el nombre de su persona asignada. Además, pueden consultar en cualquier momento, mediante su enlace personal, a quién deben obsequiar.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Ist eine Registrierung notwendig?</h3>
+                        <h3>¿Es necesario registrarse?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Nein! Du kannst sofort ohne Registrierung loslegen. Nach dem Erstellen einer Gruppe erhältst du einen Admin-Link, den du dir speichern solltest. Teilnehmer benötigen ebenfalls keine Registrierung.</p>
+                        <p>¡No! Puedes empezar de inmediato sin registrarte. Tras crear un grupo, recibirás un enlace de administrador que deberías guardar. Los participantes tampoco necesitan registrarse.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Kann ich die Auslosung zurücksetzen?</h3>
+                        <h3>¿Puedo reiniciar el sorteo?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Ja, als Admin kannst du die Auslosung jederzeit zurücksetzen. Dabei werden alle Zuordnungen gelöscht und du kannst erneut auslosen - zum Beispiel wenn neue Teilnehmer hinzugekommen sind.</p>
+                        <p>Sí, como administrador puedes reiniciar el sorteo en cualquier momento. Se eliminarán todas las asignaciones y podrás sortear de nuevo, por ejemplo, si se han añadido nuevos participantes.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item" onclick="toggleFAQ(this)">
                     <div class="faq-question">
-                        <h3>Wie viele Teilnehmer sind möglich?</h3>
+                        <h3>¿Cuántos participantes son posibles?</h3>
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>Theoretisch unbegrenzt! Die Auslosung funktioniert ab 2 Teilnehmern und kann problemlos auch mit größeren Gruppen von 20, 30 oder mehr Personen durchgeführt werden.</p>
+                        <p>¡Teóricamente ilimitados! El sorteo funciona a partir de 2 participantes y también se puede realizar sin problema con grupos grandes de 20, 30 o más personas.</p>
                     </div>
                 </div>
             </div>
@@ -259,9 +259,9 @@
     <!-- Footer CTA -->
     <section class="footer-cta">
         <div class="container">
-            <h2>Bereit für dein Wichteln?</h2>
-            <p>Starte jetzt und organisiere dein perfektes Wichteln in wenigen Minuten</p>
-            <a href="create_group.php" class="cta-button">Kostenlos Gruppe erstellen »</a>
+            <h2>¿Listo para tu Wichteln?</h2>
+            <p>Empieza ahora y organiza tu Wichteln perfecto en pocos minutos</p>
+            <a href="create_group.php" class="cta-button">Crear grupo gratis »</a>
         </div>
     </section>
 
@@ -269,8 +269,8 @@
     <footer style="background: var(--secondary-dark); color: white; text-align: center; padding: 2rem;">
         <p style="margin: 0; color: white; opacity: 1;">
             © <?php echo date('Y'); ?> wichtlä.ch • 
-            <a href="impressum.php" style="color: white; text-decoration: underline;">Impressum</a> • 
-            <a href="datenschutz.php" style="color: white; text-decoration: underline;">Datenschutz</a>
+            <a href="impressum.php" style="color: white; text-decoration: underline;">Aviso legal</a> • 
+            <a href="datenschutz.php" style="color: white; text-decoration: underline;">Privacidad</a>
         </p>
     </footer>
 

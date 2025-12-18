@@ -112,7 +112,7 @@ $assigned = null;
 if (!empty($participant_token)) {
     // Token validieren
     if (!preg_match('/^[a-zA-Z0-9]+$/', $participant_token)) {
-        die('Ungültiger Token.');
+        die('Token no válido.');
     }
     
     // Teilnehmer abrufen
@@ -121,7 +121,7 @@ if (!empty($participant_token)) {
     $participant = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$participant) {
-        die('Ungültiger Token.');
+        die('Token no válido.');
     }
     
     // Token im Cookie speichern
@@ -135,10 +135,10 @@ if (!empty($participant_token)) {
         // Keine gespeicherten Tokens - zeige schöne Fehlerseite
         ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Keine Gruppe gefunden - Wichteln</title>
+    <title>No se encontró ningún grupo - Wichteln</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
@@ -179,8 +179,8 @@ if (!empty($participant_token)) {
 </head>
 <body>
     <header>
-        <a href="index.php" title="Zur Startseite">
-            <img src="images/logo.png" alt="Wichtel Logo">
+        <a href="index.php" title="Ir al inicio">
+            <img src="images/logo.png" alt="Logo de Wichteln">
         </a>
 
     </header>
@@ -188,23 +188,23 @@ if (!empty($participant_token)) {
         <div class="error-page">
             <div class="error-content">
                 <div class="error-icon">🎄</div>
-                <h1 class="error-title">Keine Gruppe gefunden</h1>
+                <h1 class="error-title">No se encontró ningún grupo</h1>
                 <p class="error-message">
-                    Du hast noch keine Wichtel-Gruppe besucht oder dein Link ist nicht mehr gültig.
-                    Um auf deinen Teilnehmerbereich zuzugreifen, benötigst du einen persönlichen Teilnehmer-Link.
+                    Aún no has visitado ningún grupo de Wichteln o tu enlace ya no es válido.
+                    Para acceder a tu área de participante, necesitas un enlace personal de participante.
                 </p>
                 
                 <div class="error-actions">
-                    <a href="index.php" class="button primary">🏠 Zur Startseite</a>
-                    <a href="create_group.php" class="button secondary">➕ Neue Gruppe erstellen</a>
+                    <a href="index.php" class="button primary">🏠 Ir al inicio</a>
+                    <a href="create_group.php" class="button secondary">➕ Crear nuevo grupo</a>
                 </div>
                 
                 <div class="error-help">
-                    <h3>💡 So kommst du zu deinem Teilnehmerbereich:</h3>
+                    <h3>💡 Cómo acceder a tu área de participante:</h3>
                     <ul>
-                        <li><strong>Einladungslink erhalten?</strong> Benutze den Link, den dir der Gruppenadmin geschickt hat</li>
-                        <li><strong>Bereits angemeldet?</strong> Verwende deinen persönlichen Teilnehmer-Link aus der Bestätigungs-E-Mail</li>
-                        <li><strong>Link verloren?</strong> Kontaktiere den Gruppenadmin für einen neuen Link</li>
+                        <li><strong>¿Recibiste un enlace de invitación?</strong> Usa el enlace que te envió el administrador del grupo</li>
+                        <li><strong>¿Ya te registraste?</strong> Utiliza tu enlace personal de participante de tu correo de confirmación</li>
+                        <li><strong>¿Perdiste el enlace?</strong> Contacta al administrador del grupo para obtener uno nuevo</li>
                     </ul>
                 </div>
             </div>
@@ -278,7 +278,7 @@ if ($participant) {
         $stmt->execute([$participant_token]);
         $participant = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $wishlist_success = "Deine Wunschliste wurde erfolgreich gespeichert.";
+        $wishlist_success = "Tu lista de deseos se guardó correctamente.";
     }
 }
 
@@ -286,10 +286,10 @@ if ($participant) {
 if ($show_group_selector) {
     ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gruppe auswählen - Wichteln</title>
+    <title>Seleccionar grupo - Wichteln</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
@@ -330,14 +330,14 @@ if ($show_group_selector) {
 </head>
 <body>
     <header>
-        <a href="index.php" title="Zur Startseite">
-            <img src="images/logo.png" alt="Wichtel Logo">
+        <a href="index.php" title="Ir al inicio">
+            <img src="images/logo.png" alt="Logo de Wichteln">
         </a>
     </header>
     <div class="container">
         <div class="group-selector">
-            <h1>Willkommen zurück! 🎄</h1>
-            <p>Du nimmst an mehreren Wichtel-Gruppen teil. Bitte wähle die Gruppe aus, die du ansehen möchtest:</p>
+            <h1>¡Bienvenido de nuevo! 🎄</h1>
+            <p>Participas en varios grupos de Wichteln. Por favor, elige el grupo que quieres ver:</p>
             
             <form method="POST" id="group-selector-form">
                 <?php foreach ($participants as $p): ?>
@@ -347,10 +347,10 @@ if ($show_group_selector) {
                         <div class="group-card-header">
                             <div>
                                 <h2 class="group-name"><?php echo htmlspecialchars($p['group_name']); ?></h2>
-                                <p class="group-participant">Als: <strong><?php echo htmlspecialchars($p['name']); ?></strong></p>
+                                <p class="group-participant">Como: <strong><?php echo htmlspecialchars($p['name']); ?></strong></p>
                             </div>
                             <span class="group-status <?php echo $p['is_drawn'] ? 'status-drawn' : 'status-pending'; ?>">
-                                <?php echo $p['is_drawn'] ? '✓ Ausgelost' : 'Ausstehend'; ?>
+                                <?php echo $p['is_drawn'] ? '✓ Sorteado' : 'Pendiente'; ?>
                             </span>
                         </div>
                     </div>
@@ -358,7 +358,7 @@ if ($show_group_selector) {
                 <?php endforeach; ?>
                 
                 <div class="submit-container">
-                    <button type="submit" name="select_group" class="group-submit-button" id="submit-button" disabled>Gruppe öffnen</button>
+                    <button type="submit" name="select_group" class="group-submit-button" id="submit-button" disabled>Abrir grupo</button>
                 </div>
             </form>
         </div>
@@ -395,10 +395,10 @@ if ($show_group_selector) {
 ?>
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Teilnehmerbereich - <?php echo htmlspecialchars($participant['name']); ?></title>
+    <title>Área de participantes - <?php echo htmlspecialchars($participant['name']); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
@@ -433,7 +433,7 @@ if ($show_group_selector) {
                     // Zeige Erfolgs-Feedback
                     var btn = event.target.closest('button');
                     var originalText = btn.innerHTML;
-                    btn.innerHTML = '✓ Kopiert!';
+                    btn.innerHTML = '✓ ¡Copiado!';
                     btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                     setTimeout(function() {
                         btn.innerHTML = originalText;
@@ -457,9 +457,9 @@ if ($show_group_selector) {
             tempInput.setSelectionRange(0, 99999);
             try {
                 document.execCommand("copy");
-                alert("Link kopiert!");
+                alert("¡Enlace copiado!");
             } catch (err) {
-                alert("Fehler beim Kopieren. Bitte manuell kopieren.");
+                alert("Error al copiar. Copia manualmente, por favor.");
             }
             document.body.removeChild(tempInput);
         }
@@ -490,8 +490,8 @@ if ($show_group_selector) {
         <!-- Welcome Card -->
         <div class="participant-info-card">
             <div class="participant-welcome">
-                <h1 class="participant-greeting">Willkommen, <?php echo htmlspecialchars($participant['name']); ?>! 🎄</h1>
-                <p class="participant-group-name">📦 Gruppe: <?php echo htmlspecialchars($group['name']); ?></p>
+                <h1 class="participant-greeting">¡Bienvenido, <?php echo htmlspecialchars($participant['name']); ?>! 🎄</h1>
+                <p class="participant-group-name">📦 Grupo: <?php echo htmlspecialchars($group['name']); ?></p>
             </div>
         </div>
         
@@ -506,7 +506,7 @@ if ($show_group_selector) {
             <div class="partner-reveal-card">
                 <div class="partner-reveal-header">
                     <span class="partner-reveal-icon">🎁</span>
-                    <h2 class="partner-reveal-title">Dein Wichtelpartner</h2>
+                    <h2 class="partner-reveal-title">Tu persona asignada</h2>
                 </div>
                 
                 <?php if ($assigned): ?>
@@ -518,7 +518,7 @@ if ($show_group_selector) {
                         <div class="partner-wishlist-section">
                             <h3 class="wishlist-heading">
                                 <span class="wishlist-icon">📝</span>
-                                Wunschliste von <?php echo htmlspecialchars($assigned['name']); ?>
+                                Lista de deseos de <?php echo htmlspecialchars($assigned['name']); ?>
                             </h3>
                             <div class="wishlist-display">
                                 <p><?php echo nl2br(htmlspecialchars($assigned['wishlist'])); ?></p>
@@ -527,12 +527,12 @@ if ($show_group_selector) {
                     <?php else: ?>
                         <div class="empty-wishlist">
                             <span class="empty-wishlist-icon">📋</span>
-                            <p><?php echo htmlspecialchars($assigned['name']); ?> hat noch keine Wunschliste hinterlegt.</p>
+                            <p><?php echo htmlspecialchars($assigned['name']); ?> aún no ha añadido una lista de deseos.</p>
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
                     <div class="notification error">
-                        ⚠️ Dein Wichtelpartner konnte nicht gefunden werden.
+                        ⚠️ No se pudo encontrar a tu persona asignada.
                     </div>
                 <?php endif; ?>
             </div>
@@ -544,7 +544,7 @@ if ($show_group_selector) {
                 $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
             ?>
             <div class="ad-container">
-                <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 1)' : 'Anzeige'; ?></div>
+                <div class="ad-label"><?php echo $is_testing ? 'Anuncio de prueba (Posición 1)' : 'Anuncio'; ?></div>
                 <?php if ($is_testing): ?>
                     <div class="ad-test-placeholder">
                         📊 Google Ad Placeholder<br>
@@ -569,8 +569,8 @@ if ($show_group_selector) {
         <?php else: ?>
             <div class="section-card waiting-card">
                 <div class="waiting-icon">⏳</div>
-                <h2>Auslosung ausstehend</h2>
-                <p>Die Auslosung wurde noch nicht durchgeführt. Bitte schaue später wieder vorbei!</p>
+                <h2>Sorteo pendiente</h2>
+                <p>Aún no se ha realizado el sorteo. ¡Vuelve más tarde!</p>
             </div>
         <?php endif; ?>
         
@@ -579,26 +579,26 @@ if ($show_group_selector) {
         <div class="section-card">
             <div class="section-card-header">
                 <span class="section-icon">📝</span>
-                <h2>Deine Wunschliste</h2>
+                <h2>Tu lista de deseos</h2>
             </div>
             
             <?php if (!$group['is_drawn']): ?>
-                <p class="section-description">Trage hier deine Wünsche ein. Dein Wichtelpartner wird diese nach der Auslosung sehen können.</p>
+                <p class="section-description">Escribe aquí tus deseos. Tu persona asignada podrá verlos después del sorteo.</p>
                 <form method="POST" class="wishlist-form">
                     <div class="form-group">
                         <label for="wishlist" class="form-label">
-                            <span>Deine Wünsche</span>
-                            <span class="form-hint">z.B. Bücher, Schokolade, Selbstgemachtes...</span>
+                            <span>Tus deseos</span>
+                            <span class="form-hint">p. ej., libros, chocolate, algo hecho a mano...</span>
                         </label>
                         <textarea id="wishlist" 
                                   name="wishlist" 
                                   rows="6" 
                                   class="form-textarea"
-                                  placeholder="- Bücher über...&#10;- Schokolade&#10;- Etwas Selbstgemachtes&#10;- Überraschung!"><?php echo htmlspecialchars($participant['wishlist'] ?? ''); ?></textarea>
+                                  placeholder="- Libros sobre...&#10;- Chocolate&#10;- Algo hecho a mano&#10;- ¡Sorpresa!"><?php echo htmlspecialchars($participant['wishlist'] ?? ''); ?></textarea>
                     </div>
                     <button type="submit" name="update_wishlist" class="button primary">
                         <span>💾</span>
-                        Wunschliste speichern
+                        Guardar lista de deseos
                     </button>
                 </form>
             <?php else: ?>
@@ -606,19 +606,19 @@ if ($show_group_selector) {
                     <div class="wishlist-display locked">
                         <div class="wishlist-locked-header">
                             <span class="lock-icon">🔒</span>
-                            <span>Deine gespeicherte Wunschliste</span>
+                            <span>Tu lista de deseos guardada</span>
                         </div>
                         <p><?php echo nl2br(htmlspecialchars($participant['wishlist'])); ?></p>
                     </div>
                 <?php else: ?>
                     <div class="empty-wishlist">
                         <span class="empty-wishlist-icon">📋</span>
-                        <p>Du hast keine Wunschliste hinterlegt.</p>
+                        <p>No has añadido ninguna lista de deseos.</p>
                     </div>
                 <?php endif; ?>
                 <p class="text-muted">
                     <span class="info-icon">ℹ️</span>
-                    Die Wunschliste kann nach der Auslosung nicht mehr geändert werden.
+                    La lista de deseos no se puede cambiar después del sorteo.
                 </p>
             <?php endif; ?>
         </div>
@@ -627,25 +627,25 @@ if ($show_group_selector) {
         <div class="section-card">
             <div class="section-card-header">
                 <span class="section-icon">ℹ️</span>
-                <h2>Gruppendetails</h2>
+                <h2>Detalles del grupo</h2>
             </div>
             
             <div class="group-info-grid">
                 <div class="group-info-item">
-                    <span class="info-label">💰 Budget</span>
-                    <span class="info-value">
-                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "Nicht festgelegt"; ?>
-                    </span>
+                    <span class="info-label">💰 Presupuesto</span>
+                <span class="info-value">
+                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "No especificado"; ?>
+                </span>
                 </div>
                 <div class="group-info-item">
-                    <span class="info-label">📅 Geschenkübergabe</span>
-                    <span class="info-value">
-                        <?php echo $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "Nicht festgelegt"; ?>
-                    </span>
+                    <span class="info-label">📅 Entrega de regalos</span>
+                <span class="info-value">
+                        <?php echo $group['gift_exchange_date'] ? date('d.m.Y', strtotime($group['gift_exchange_date'])) : "No especificada"; ?>
+                </span>
                 </div>
                 <?php if (!empty($group['description'])): ?>
                 <div class="group-info-item full-width">
-                    <span class="info-label">📄 Beschreibung</span>
+                    <span class="info-label">📄 Descripción</span>
                     <span class="info-value"><?php echo htmlspecialchars($group['description']); ?></span>
                 </div>
                 <?php endif; ?>
@@ -656,16 +656,16 @@ if ($show_group_selector) {
         <div class="section-card">
             <div class="section-card-header">
                 <span class="section-icon">🔗</span>
-                <h2>Dein persönlicher Link</h2>
+                <h2>Tu enlace personal</h2>
             </div>
             
-            <p class="section-description">Du kannst diesen Link verwenden, um später wieder auf deine Teilnahme zuzugreifen.</p>
+            <p class="section-description">Puedes usar este enlace para volver a acceder a tu participación más tarde.</p>
             
             <div class="link-display-container">
                 <pre id="participant-link" class="link-display" data-url="<?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?>"><?php echo htmlspecialchars(get_display_url('/participant.php?token=' . urlencode($participant_token))); ?></pre>
                 <button class="button secondary copy-btn" onclick="copyToClipboard('participant-link')">
                     <span>📋</span>
-                    Link kopieren
+                    Copiar enlace
                 </button>
             </div>
         </div>
@@ -679,10 +679,10 @@ if ($show_group_selector) {
         <div class="multi-group-nav">
             <p class="multi-group-text">
                 <span class="multi-group-icon">🎁</span>
-                Du nimmst an mehreren Wichtel-Gruppen teil
+                Participas en varios grupos de Wichteln
             </p>
             <a href="participant.php" class="button secondary">
-                🔄 Gruppe wechseln
+                🔄 Cambiar de grupo
             </a>
         </div>
         <?php endif; ?>
@@ -694,7 +694,7 @@ if ($show_group_selector) {
             $is_testing = defined('GOOGLE_ADS_TESTING') && GOOGLE_ADS_TESTING;
         ?>
         <div class="ad-container">
-            <div class="ad-label"><?php echo $is_testing ? 'Test-Anzeige (Position 2)' : 'Anzeige'; ?></div>
+            <div class="ad-label"><?php echo $is_testing ? 'Anuncio de prueba (Posición 2)' : 'Anuncio'; ?></div>
             <?php if ($is_testing): ?>
                 <div class="ad-test-placeholder">
                     📊 Google Ad Placeholder<br>
