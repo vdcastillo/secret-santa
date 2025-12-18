@@ -3,8 +3,10 @@ version: '3.8'
 services:
   # Servicio de la Aplicación PHP
   app:
-    build: .
-    container_name: wichteln_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: santa_secreto
     ports:
       - "8080:80"
     volumes:
@@ -20,7 +22,7 @@ services:
     networks:
       - wichteln_network
 
-  # Servicio de Base de Datos (en un contenedor aparte pero gestionado aquí)
+  # Servicio de Base de Datos (en un contenedor aparte pero gestionado aquzí)
 #  db:
 #    image: mysql:8.0
 #    container_name: wichteln_db

@@ -1,9 +1,9 @@
 <?php
 // Datenbankeinstellungen
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'wichtel_db');
-define('DB_USER', 'wichtel_db_user');
-define('DB_PASS', 'your_database_password_here');
+define('DB_HOST', (getenv('DB_HOST') ?: 'localhost'));
+define('DB_NAME', (getenv('DB_NAME') ?: 'wichtel_db'));
+define('DB_USER', (getenv('DB_NAME') ?: 'root'));
+define('DB_PASS', (getenv('DB_PASSWORD') ?: ''));
 
 // E-Mail-Einstellungen
 define('SMTP_FROM_EMAIL', 'noreply@xn--wichtl-gua.ch'); // Ersetze mit deiner Absender-E-Mail
