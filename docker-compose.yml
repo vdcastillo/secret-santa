@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # Servicio de la Aplicación PHP
+  app:
+    build: .
+    container_name: wichteln_app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      # Aquí defines a qué host conectarse.
+      # Si el contenedor de DB está en la misma red de Docker, usa su nombre de servicio ('db').
+      # Si la base de datos está en un servidor externo, pon la IP o dominio.
+      - DB_HOST=db
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=wichteln_db
+    networks:
+      - wichteln_network
+
+  # Servicio de Base de Datos (en un contenedor aparte pero gestionado aquí)
+#  db:
+#    image: mysql:8.0
+#    container_name: wichteln_db
+#    restart: always
+#    environment:
+#      MYSQL_DATABASE: wichteln_db
+#      MYSQL_USER: user
+#      MYSQL_PASSWORD: password
+#      MYSQL_ROOT_PASSWORD: rootpassword
+#    networks:
+#      - wichteln_network
+
+networks:
+  wichteln_network:
+    driver: bridge

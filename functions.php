@@ -42,7 +42,7 @@ function send_email($to, $subject, $message, $is_html = false) {
     // Usar la función mail()
 //    return mail($to, $subject, $message, $headers);
 
-    return sendEmail($to,$subject,$message);
+    return sendEmail($to,$subject,$message, true);
 
 }
 

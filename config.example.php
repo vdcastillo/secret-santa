@@ -8,6 +8,10 @@ define('DB_PASS', 'your_database_password_here');
 // E-Mail-Einstellungen
 define('SMTP_FROM_EMAIL', 'noreply@xn--wichtl-gua.ch'); // Ersetze mit deiner Absender-E-Mail
 define('SMTP_FROM_NAME', 'Wichtel Webseite');
+define('SMTP_HOST', 'localhost');
+define('SMTP_USERNAME', 'username');
+define('SMTP_PASS', 'pass');
+define('SMTP_PORT', '465');
 
 // Cookie-Einstellungen für automatisches Login
 define('COOKIE_NAME', 'wichteln_tokens'); // Name des Cookies
