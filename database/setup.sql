@@ -18,15 +18,15 @@ USE wichtel_db;
 
 CREATE TABLE IF NOT EXISTS `groups` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(255) NOT NULL COMMENT 'Name der Wichtelgruppe',
-  `admin_token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Token für Admin-Zugriff',
-  `invite_token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Token für Teilnehmer-Einladung',
-  `admin_email` VARCHAR(255) NULL COMMENT 'E-Mail des Gruppenadministrators',
-  `budget` DECIMAL(10,2) NULL COMMENT 'Budget für Geschenke (optional)',
-  `description` TEXT NULL COMMENT 'Beschreibung der Gruppe (optional)',
-  `gift_exchange_date` DATE NULL COMMENT 'Datum der Geschenkübergabe (optional)',
-  `is_drawn` TINYINT(1) DEFAULT 0 COMMENT 'Wurde bereits ausgelost? (0=Nein, 1=Ja)',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Erstellungszeitpunkt',
+  `name` VARCHAR(255) NOT NULL COMMENT 'Name of the Secret Santa group',
+  `admin_token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Token for admin access',
+  `invite_token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Token for participant invitation',
+  `admin_email` VARCHAR(255) NULL COMMENT 'Email of the group administrator',
+  `budget` DECIMAL(10,2) NULL COMMENT 'Budget for gifts (optional)',
+  `description` TEXT NULL COMMENT 'Description of the group (optional)',
+  `gift_exchange_date` DATE NULL COMMENT 'Date of gift exchange (optional)',
+  `is_drawn` TINYINT(1) DEFAULT 0 COMMENT 'Has the draw already been made? (0=No, 1=Yes)',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation timestamp',
   
   INDEX idx_admin_token (`admin_token`),
   INDEX idx_invite_token (`invite_token`),
@@ -41,13 +41,13 @@ COMMENT='Wichtel-Gruppen';
 
 CREATE TABLE IF NOT EXISTS `participants` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `group_id` INT NOT NULL COMMENT 'Referenz zur Gruppe',
-  `name` VARCHAR(255) NOT NULL COMMENT 'Name des Teilnehmers',
-  `email` VARCHAR(255) NULL COMMENT 'E-Mail des Teilnehmers (optional)',
-  `token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Persönlicher Zugangs-Token',
-  `assigned_to` INT NULL COMMENT 'ID des zugewiesenen Wichtelpartners',
-  `wishlist` TEXT NULL COMMENT 'Wunschliste des Teilnehmers',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Registrierungszeitpunkt',
+  `group_id` INT NOT NULL COMMENT 'Reference to the group',
+  `name` VARCHAR(255) NOT NULL COMMENT 'Participant name',
+  `email` VARCHAR(255) NULL COMMENT 'Participant email (optional)',
+  `participant_token` VARCHAR(64) NOT NULL UNIQUE COMMENT 'Personal access token',
+  `assigned_to` INT NULL COMMENT 'ID of the assigned Secret Santa partner',
+  `wishlist` TEXT NULL COMMENT 'Participant wishlist',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Registration timestamp',
   
   FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`assigned_to`) REFERENCES `participants`(`id`) ON DELETE SET NULL,
@@ -65,10 +65,10 @@ COMMENT='Wichtel-Teilnehmer';
 
 CREATE TABLE IF NOT EXISTS `exclusions` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `group_id` INT NOT NULL COMMENT 'Referenz zur Gruppe',
-  `participant_id` INT NOT NULL COMMENT 'Teilnehmer, der ausschließt',
-  `excluded_participant_id` INT NOT NULL COMMENT 'Ausgeschlossener Teilnehmer',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Erstellungszeitpunkt',
+  `group_id` INT NOT NULL COMMENT 'Reference to the group',
+  `participant_id` INT NOT NULL COMMENT 'Participant who excludes',
+  `excluded_participant_id` INT NOT NULL COMMENT 'Excluded participant',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Creation timestamp',
   
   FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`participant_id`) REFERENCES `participants`(`id`) ON DELETE CASCADE,

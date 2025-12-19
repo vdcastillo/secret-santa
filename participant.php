@@ -634,7 +634,7 @@ if ($show_group_selector) {
                 <div class="group-info-item">
                     <span class="info-label">💰 Presupuesto</span>
                 <span class="info-value">
-                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . " CHF" : "No especificado"; ?>
+                        <?php echo $group['budget'] !== null ? number_format($group['budget'], 2) . "MXN" : "No especificado"; ?>
                 </span>
                 </div>
                 <div class="group-info-item">

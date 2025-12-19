@@ -5,7 +5,12 @@ FROM php:8.3-apache
 RUN apt-get update && apt-get install -y git \
     # You can add more extensions here if needed, e.g., libpng-dev
     # && docker-php-ext-install gd \
-    # Clean up apt lists to reduce image size
+    # Clean up apt lists to reduce image size \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalamos las extensiones de PHP necesarias para MySQL

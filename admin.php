@@ -336,7 +336,7 @@ if (isset($_POST['draw'])) {
                             );
 
                             $response = send_email($participant['email'], $subject, $html_message, true);
-                            if (!$response['sucess']) {
+                            if (!$response['success']) {
                                 // Fehlerbehandlung, falls E-Mail nicht gesendet werden konnte
                                 error_log("E-Mail konnte nicht an {$participant['email']} gesendet werden. {$response['response']}");
                             }
